@@ -1,0 +1,3 @@
+[submodule "ecsd"]
+	path = ecsd
+	url = git@github.com:ConsoleCowboysInCyberspace/ecsd.git
