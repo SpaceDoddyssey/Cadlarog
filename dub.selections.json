@@ -1,0 +1,9 @@
+{
+	"fileVersion": 1,
+	"versions": {
+		"bindbc-loader": "1.0.1",
+		"bindbc-sdl": "1.1.2",
+		"dplug": "12.7.0",
+		"intel-intrinsics": "1.10.2"
+	}
+}
