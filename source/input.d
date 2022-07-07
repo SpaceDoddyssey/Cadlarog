@@ -2,12 +2,15 @@ module input;
 
 import ecsd;
 import events;
+import levelmap;
 import bindbc.sdl;
 import dplug.math.vector;
 
+import std.stdio;
 shared static this()
 {
 	subscribe(&processEvent);
+    subscribe(&controlHandling);
 }
 
 private:
@@ -41,6 +44,7 @@ void processEvent(ref SDLEvent ev)
 	{
 		case SDL_KEYDOWN:
 		case SDL_KEYUP:
+//    writeln(ev.key.keysym.scancode);
 			keyboardState[ev.key.keysym.scancode] = ev.type == SDL_KEYDOWN;
 			break;
 		case SDL_MOUSEBUTTONDOWN:
@@ -53,3 +57,35 @@ void processEvent(ref SDLEvent ev)
 		default:
 	}
 }
+
+void controlHandling(ref LoopStruct l){
+    if(isKeyPressed(SDLK_DOWN))
+        publish(CameraMove(Dir.Down)); 
+    if(isKeyPressed(SDLK_UP))
+        publish(CameraMove(Dir.Up)); 
+    if(isKeyPressed(SDLK_LEFT))
+        publish(CameraMove(Dir.Left)); 
+    if(isKeyPressed(SDLK_RIGHT))
+        publish(CameraMove(Dir.Right));
+    
+    if(isKeyPressed(SDLK_s, true))
+        publish(PlayerMove(Dir.Down)); 
+    if(isKeyPressed(SDLK_w, true))
+        publish(PlayerMove(Dir.Up)); 
+    if(isKeyPressed(SDLK_a, true))
+        publish(PlayerMove(Dir.Left)); 
+    if(isKeyPressed(SDLK_d, true))
+        publish(PlayerMove(Dir.Right));
+}
+
+
+
+/*
+// binds that do logic every frame the key is down
+if(isKeyPressed(SDLK_w))
+  accel.y -= 1;
+
+// binds that do logic only on the first frames where given key is pressed
+if(isKeyPressed(SDLK_space, true))
+  attack();
+*/

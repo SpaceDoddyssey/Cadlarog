@@ -6,6 +6,7 @@ import ecsd;
 import renderer;
 import entitycreation;
 import perf;
+import components;
 
 import dplug.math.vector;
 import std.stdio;
@@ -40,6 +41,8 @@ class LevelMap{
             verse = allocUniverse();
             verse.registerComponent!Transform;
             verse.registerComponent!SpriteRender;
+            verse.registerComponent!HP;
+            verse.registerComponent!MapPos;
             
             rand = Random(seed);
 

@@ -3,8 +3,8 @@ module renderer;
 import ecsd;
 //import game;
 import events;
-import entitycreation;
 import perf;
+import components;
 
 import std;
 import std.experimental.logger;
@@ -15,7 +15,7 @@ import std.stdio;
 
 SDL_Window* window;
 SDL_Renderer* renderer;
-int cameraXOffset = 15, cameraYOffset = -10;
+float cameraXOffset = 15, cameraYOffset = -10;
 
 ComponentCache!(Transform, SpriteRender) spriteDrawables;
 SDL_Texture*[string] textureCache;
@@ -25,6 +25,7 @@ shared static this(){
   subscribe(&init);
   subscribe(&loop);
   subscribe(&appShutdown);
+  subscribe(&cameraMove);
 }
 
 enum SpriteLayer{
@@ -33,6 +34,25 @@ enum SpriteLayer{
     Door = 1,
     Item = 2,
     Character = 3
+}
+
+struct SpriteRender{
+    private:
+        SDL_Texture *texture;
+        string pathString;
+    public:
+        SpriteLayer layer;
+        vec2i size;
+        this(string p, vec2i s, SpriteLayer l){
+            path = p; size = s; layer = l;
+        }
+        void path(string p){
+            pathString = p;
+            texture = getTexture(p);
+        }
+        string path(){
+            return pathString;
+        }
 }
 
 void init(ref AppStartup s){ 
@@ -100,8 +120,8 @@ void loop(ref LoopStruct l){
     //writeln("xOffset: ", cameraXOffset);
     foreach(ent, ref transform, ref sprite; spriteDrawables){
         SDL_Rect rect = {
-            x: transform.position.x - cameraXOffset * 32,
-            y: transform.position.y - cameraYOffset * 32,
+            x: transform.position.x - cast(int)cameraXOffset * 32,
+            y: transform.position.y - cast(int)cameraYOffset * 32,
             w: sprite.size.x,
             h: sprite.size.y,
         };
@@ -114,6 +134,21 @@ void loop(ref LoopStruct l){
     }
     
     SDL_RenderPresent(renderer);
+}
+
+void cameraMove(ref CameraMove m){
+  import renderer: cameraXOffset, cameraYOffset;
+  switch(m.dir){
+    case Dir.Left:
+        cameraXOffset -= 0.3; break;
+    case Dir.Right:
+        cameraXOffset += 0.3; break;
+    case Dir.Up:
+        cameraYOffset -= 0.3; break;
+    case Dir.Down:
+        cameraYOffset += 0.3; break;
+    default:
+  }
 }
 
 class Sprite{
