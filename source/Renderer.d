@@ -12,6 +12,7 @@ import dplug.math.vector;
 import bindbc.sdl;
 import bindbc.sdl.image;
 import std.stdio;
+mixin registerSubscribers;
 
 SDL_Window* window;
 SDL_Renderer* renderer;
@@ -20,13 +21,6 @@ float cameraXOffset = 15, cameraYOffset = -10;
 ComponentCache!(Transform, SpriteRender) spriteDrawables;
 SDL_Texture*[string] textureCache;
 Sprite[] sprites;
-
-shared static this(){
-  subscribe(&init);
-  subscribe(&loop);
-  subscribe(&appShutdown);
-  subscribe(&cameraMove);
-}
 
 enum SpriteLayer{
     Background = -1,
@@ -55,6 +49,7 @@ struct SpriteRender{
         }
 }
 
+@EventSubscriber
 void init(ref AppStartup s){ 
     //Create the window
 //============================================================================
@@ -103,11 +98,13 @@ void init(ref AppStartup s){
     if(renderer is null) fatalf("failed to create renderer: %s", SDL_GetError().fromStringz);
 }
 
+@EventSubscriber
 void appShutdown(ref FinishStruct f){
     SDL_Quit();
     SDL_DestroyWindow(window);
 }
 
+@EventSubscriber
 void loop(ref LoopStruct l){
     auto perf = Perf(null);
     //Render the window
@@ -136,6 +133,7 @@ void loop(ref LoopStruct l){
     SDL_RenderPresent(renderer);
 }
 
+@EventSubscriber
 void cameraMove(ref CameraMove m){
   import renderer: cameraXOffset, cameraYOffset;
   switch(m.dir){

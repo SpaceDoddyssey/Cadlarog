@@ -7,11 +7,7 @@ import bindbc.sdl;
 import dplug.math.vector;
 
 import std.stdio;
-shared static this()
-{
-	subscribe(&processEvent);
-    subscribe(&controlHandling);
-}
+mixin registerSubscribers;
 
 private:
 
@@ -38,6 +34,7 @@ vec2i getMousePos()
 	return mousePos;
 }
 
+@EventSubscriber
 void processEvent(ref SDLEvent ev)
 {
 	switch(ev.type)
@@ -58,6 +55,7 @@ void processEvent(ref SDLEvent ev)
 	}
 }
 
+@EventSubscriber
 void controlHandling(ref LoopStruct l){
     if(isKeyPressed(SDLK_DOWN))
         publish(CameraMove(Dir.Down)); 
@@ -77,8 +75,6 @@ void controlHandling(ref LoopStruct l){
     if(isKeyPressed(SDLK_d, true))
         publish(PlayerMove(Dir.Right));
 }
-
-
 
 /*
 // binds that do logic every frame the key is down

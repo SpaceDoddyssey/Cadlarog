@@ -63,9 +63,6 @@ double nowSeconds() {
     return SDL_GetTicks() / 1000.0;
 }
 
-
-//============================================================================
-
 ShouldExit processEvents()
 {
     //auto perf = Perf(null);
@@ -74,28 +71,16 @@ ShouldExit processEvents()
     {
         case SDL_QUIT:
             return ShouldExit.yes;
-        default:
-            publish(SDLEvent(&event));
-        /*
-        case SDL_QUIT:
-            return ShouldExit.yes;
         case SDL_KEYDOWN:
             switch(event.key.keysym.sym)
             {
                 case SDLK_ESCAPE:
                     return ShouldExit.yes;
-                case SDLK_LEFT:
-                    publish(Move(Dir.Left)); break;
-                case SDLK_RIGHT:
-                    publish(Move(Dir.Right)); break;
-                case SDLK_UP:
-                    publish(Move(Dir.Up)); break;
-                case SDLK_DOWN:
-                    publish(Move(Dir.Down)); break;
                 default:
             }
             goto default;
-        default:*/
+        default:
+            publish(SDLEvent(&event));
     }
     
     return ShouldExit.no;

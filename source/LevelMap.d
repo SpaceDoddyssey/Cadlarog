@@ -7,6 +7,7 @@ import renderer;
 import entitycreation;
 import perf;
 import components;
+import set;
 
 import dplug.math.vector;
 import std.stdio;
@@ -34,15 +35,13 @@ class LevelMap{
         int maxWidth, maxHeight;
         int minRoomWidth = 5, minRoomHeight = 5;
         int maxRoomWidth = 8, maxRoomHeight = 8;
-        Tile[] tiles;//, nextState;
+        //Chunk[] chunks;
+        Tile[] tiles;
         Room[] rooms;
         float tileOffsetX = 0, tileOffsetY = 0;
         this(int _x, int _y){
             verse = allocUniverse();
-            verse.registerComponent!Transform;
-            verse.registerComponent!SpriteRender;
-            verse.registerComponent!HP;
-            verse.registerComponent!MapPos;
+            registration(verse);
             
             rand = Random(seed);
 
@@ -57,27 +56,29 @@ class LevelMap{
                 while(!plumbLineToPath(r)){}
             }
             cullDeadEnds();
-            placePlayer();
+            Room r = placePlayer();
+            placeEntInRandomRoom("Crate");
+            placeEntInRoom("Crate", r);
             texturePhase();
         }
-    ref Tile getTile(vec2i pos) { return tiles[pos.y * maxWidth + pos.x]; }
     ref Tile getTile(int x, int y) { return tiles[y * maxWidth + x]; }
+    ref Tile getTile(vec2i pos) { return getTile(pos.v.tupleof); }
     private void initialize(){
-//auto perf = Perf(null);
         //tileOffsetX = tileSize * (maxWidth/2);
         //tileOffsetY = tileSize * (maxHeight/2);
         for(int x = 0; x < maxWidth; x++){
             for(int y = 0; y < maxHeight; y++){
                 Tile T;
                 T.setPos(cast(int)(-tileOffsetX+(x*tileSize)), cast(int)(-tileOffsetY+(y*tileSize)));
+                T.mpos.x = x; T.mpos.y = y;
                 T.type = TileType.Wall;
                 getTile(x,y) = T;
             }
         }
     }
     private Rect[] partitionPhase(int numPartitions){
-//auto perf = Perf(null);
         Rect[] partitions;
+        //The first "partition" is the entire map
         vec2i alpha = vec2i(0, 0);
         vec2i omega = vec2i(maxWidth-1, maxHeight-1);
         Rect wholeMap = new Rect(alpha, omega);
@@ -106,7 +107,6 @@ class LevelMap{
     //Takes the partitions and generates rooms in numRooms spaces. 
     //If numRooms is greater than the number of partitions, puts a room in every partition
     private void roomGenPhase(Rect[] partitions, int numRooms){
-//auto perf = Perf(null);
         int[] alreadyUsed;
         for(int i = 0; i < numRooms && i < partitions.length; i++){
             int nextIndex = cast(int)uniform(0, partitions.length, rand);
@@ -209,10 +209,11 @@ class LevelMap{
             nextY -= yWalkDelta;
             getTile(nextX, nextY).type = TileType.Floor;
         }
-        getTile(xPos, yPos).type = TileType.Floor;
 
         //now place a door there
         Entity door = makeEntity(verse, "Door", xPos, yPos);
+        getTile(xPos, yPos).add(door);
+
         return true;
     }
     private void cullDeadEnds(){
@@ -249,13 +250,34 @@ class LevelMap{
             }
         }
     }
-    private void placePlayer(){
-        int whichRoom = cast(int)uniform(0, rooms.length);
+    private Room placePlayer(){
+        int whichRoom = cast(int)uniform(0, rooms.length, rand);
         Room r = rooms[whichRoom];
-        int playerX = cast(int)uniform(r.rect.mins.x+1, r.rect.maxs.x);
-        int playerY = cast(int)uniform(r.rect.mins.y+1, r.rect.maxs.y);
-        makePlayer(verse, playerX, playerY);
+        int playerX = cast(int)uniform(r.rect.mins.x+1, r.rect.maxs.x, rand);
+        int playerY = cast(int)uniform(r.rect.mins.y+1, r.rect.maxs.y, rand);
+        Entity pEnt = makePlayer(verse, playerX, playerY);
+        writeln("Spawning player at ", playerX, " ", playerY );
+        getTile(playerX, playerY).add(pEnt);
+        return r;
         //Expand -------------------------------
+    }
+    private void placeEntInRandomRoom(string s){
+        int whichRoom = cast(int)uniform(0, rooms.length, rand);
+        Room r = rooms[whichRoom];
+        int entX = cast(int)uniform(r.rect.mins.x+1, r.rect.maxs.x, rand);
+        int entY = cast(int)uniform(r.rect.mins.y+1, r.rect.maxs.y, rand);
+        Entity pEnt = makeEntity(verse, s, entX, entY);
+        writeln("Spawning entity at ", entX, " ", entY );
+        getTile(entX, entY).add(pEnt);
+        //Expand -------------------------------
+        //Make sure this doesn't place an object on a tile that's already full
+    }
+    private void placeEntInRoom(string s, Room r){
+        int entX = cast(int)uniform(r.rect.mins.x+1, r.rect.maxs.x, rand);
+        int entY = cast(int)uniform(r.rect.mins.y+1, r.rect.maxs.y, rand);
+        Entity pEnt = makeEntity(verse, s, entX, entY);
+        writeln("Spawning entity at ", entX, " ", entY );
+        getTile(entX, entY).add(pEnt);
     }
     private void texturePhase(){
 //auto perf = Perf(null);
@@ -269,21 +291,42 @@ class LevelMap{
                 default:
                     target = "sprites/Empty.png"; break;
             }
-            t.ent = makeEntity(verse, "Tile", t.pos.position.x, t.pos.position.y);
-            t.ent.add(SpriteRender(target, vec2i(32, 32), SpriteLayer.Floor));
+            t.tileEnt = makeEntity(verse, "Tile", t.pos.position.x, t.pos.position.y);
+            t.tileEnt.add(SpriteRender(target, vec2i(32, 32), SpriteLayer.Floor));
         }
+    }
+    void lookForEnts(){
+        foreach(Tile t ; tiles){
+            if(t.ents.length() != 0){
+                writeln("Ent(s) found at ", t.mpos.x, " ", t.mpos.y);
+            }
+        }
+        writeln("done looking");
     }
 }
 
 public struct Tile{
     Transform pos;
+    MapPos mpos;
     TileType type;
     SDL_Texture* tex;
-    Entity ent = void;
+    Entity tileEnt = void;
     void setPos(int x, int y){
         pos.position.x = x;
         pos.position.y = y;
     }
+    Set!Entity ents;
+    Entity[] entsWith(Component)(){
+        Entity[] result;
+        foreach(Entity ent ; ents){
+            if(ent.has!Component){
+                result ~= ent;
+            }
+        }
+        return result;
+    }
+    void add(Entity ent){ ents.add(ent); }
+    void remove(Entity ent){ ents.remove(ent); }
 }
 
 enum TileType{
@@ -339,4 +382,5 @@ public class Room
     public this(Rect _rect){
         rect = _rect;
     }
+    //Add function to get random tile in room
 }
