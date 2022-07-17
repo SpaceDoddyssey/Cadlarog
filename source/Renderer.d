@@ -35,10 +35,11 @@ struct SpriteRender{
         SDL_Texture *texture;
         string pathString;
     public:
+        bool enabled;
         SpriteLayer layer;
         vec2i size;
         this(string p, vec2i s, SpriteLayer l){
-            path = p; size = s; layer = l;
+            path = p; size = s; layer = l; enabled = true;
         }
         void path(string p){
             pathString = p;
@@ -47,6 +48,21 @@ struct SpriteRender{
         string path(){
             return pathString;
         }
+}
+
+class Sprite{
+    SDL_Texture* tex;
+    SDL_Rect rect;
+    this(SDL_Texture* tex, int w, int h)
+    {
+        this.tex = tex;
+        rect = SDL_Rect(0, 0, w, h);
+    }
+    void setPosition(int x, int y)
+    {
+        rect.x = x;
+        rect.y = y;
+    }
 }
 
 @EventSubscriber
@@ -111,11 +127,12 @@ void loop(ref LoopStruct l){
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    if(spriteDrawables.refresh){
+    if(spriteDrawables.refresh(ForceRefresh.yes)){
         spriteDrawables.entities.sort!"a.spriteRender.layer < b.spriteRender.layer";
     }
     //writeln("xOffset: ", cameraXOffset);
     foreach(ent, ref transform, ref sprite; spriteDrawables){
+        if(!sprite.enabled) continue;
         SDL_Rect rect = {
             x: transform.position.x - cast(int)cameraXOffset * 32,
             y: transform.position.y - cast(int)cameraYOffset * 32,
@@ -147,21 +164,6 @@ void cameraMove(ref CameraMove m){
         cameraYOffset += 0.3; break;
     default:
   }
-}
-
-class Sprite{
-    SDL_Texture* tex;
-    SDL_Rect rect;
-    this(SDL_Texture* tex, int w, int h)
-    {
-        this.tex = tex;
-        rect = SDL_Rect(0, 0, w, h);
-    }
-    void setPosition(int x, int y)
-    {
-        rect.x = x;
-        rect.y = y;
-    }
 }
 
 Sprite registerSprite(Sprite s, string str, int x, int y){

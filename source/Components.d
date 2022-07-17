@@ -1,12 +1,11 @@
 module components;
-
 import dplug.math.vector;
-
 import ecsd;
 import std.stdio;
 import renderer;
 import events;
 import std.stdio;
+
 struct HP{
     int curHP, maxHP, damRed = 0;
     Entity ent = void;
@@ -14,22 +13,28 @@ struct HP{
         curHP = maxHP = h;
     }
     void onComponentAdded(Universe verse, EntityID id){
+writeln("hp added");
         ent = Entity(id);
         (ent.get!PubSub).subscribe(&receiveAttack);
     }
     public void setDR(int d){ damRed = d; }
     public void takeDamage(int d){
         if (d > damRed) { curHP -= (d - damRed); } 
+        if(curHP <= 0){
+            (ent.get!PubSub).publish(DeathEvent());
+            ent.free();
+        }
         //handle death - expand this in general ----------------- 
     }
-    public void receiveAttack(Entity e, ref Attack a){
+    void receiveAttack(Entity e, ref AttackEvent a){
+writeln("Hello");
         int d = a.damage;
         if (d > damRed) { curHP -= (d - damRed); } 
+        if(curHP <= 0){
+            (ent.get!PubSub).publish(DeathEvent());
+            ent.free();
+        }
     }
-}
-
-struct Attack{
-    int damage;
 }
 
 struct Door{
@@ -60,6 +65,27 @@ struct Door{
 struct Contents{
     Entity[] contents;
     alias contents this;
+    Entity ent = void;
+    void onComponentAdded(Universe verse, EntityID id){
+        ent = Entity(id);
+        (ent.get!PubSub).subscribe(&die);
+    }
+    void addContents(Entity e){
+        if(e.has!SpriteRender){
+            (e.get!SpriteRender()).enabled = false;
+        }
+        if(e.has!MapPos){
+            e.remove!MapPos;
+        }
+        contents ~= e;
+    }
+    void die(Entity e, ref DeathEvent d){
+        foreach(Entity cont ; contents){
+            (cont.get!SpriteRender()).enabled = true;
+            vec2i pos = (ent.get!MapPos).position;
+            cont.add(MapPos(pos));
+        }
+    }
 }
 
 struct Transform{ vec2i position; alias position this; }
@@ -68,6 +94,15 @@ struct AttackBait{}
 struct TileBlock{}
 struct Wood{}
 struct Metal{}
+struct CanPickUp{}
+
+struct Weapon{
+    Attack attack;
+}
+
+struct Attack{
+    int damage;
+}
 
 static void registration(Universe verse){
     verse.registerBuiltinComponents;
@@ -81,7 +116,9 @@ static void registration(Universe verse){
     verse.registerComponent!Contents;
     verse.registerComponent!TileBlock;
     verse.registerComponent!AttackBait;
+    verse.registerComponent!Weapon;
     verse.registerComponent!Attack;
+    verse.registerComponent!CanPickUp;
 }
 /*
     void onComponentAdded(Universe, EntityID)

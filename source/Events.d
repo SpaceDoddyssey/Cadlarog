@@ -12,6 +12,8 @@ struct PlayerMove{ Dir dir; this(Dir d){ dir = d; } }
 struct OpenEvent{}
 struct CloseEvent{}
 
+struct DeathEvent{}
+
 struct AttackEvent{
   import components : Attack;
   Attack* a;

@@ -8,6 +8,7 @@ import components;
 import dplug.math.vector;
 import bindbc.sdl;
 import bindbc.sdl.image;
+import std.stdio;
 
 static Entity makeEntity(Universe verse, string s, int x, int y){
     Entity ent = Entity(verse.allocEntity);
@@ -18,6 +19,7 @@ static Entity makeEntity(Universe verse, string s, int x, int y){
             ent.add(SpriteRender("sprites/door_closed.png", vec2i(32, 32), SpriteLayer.Door));
             ent.add(Door(false, "sprites/door_open.png", "sprites/door_closed.png"));
             ent.add(TileBlock());
+            ent.add(Wood());
             ent.add(MapPos(vec2i(x, y)));
             break;
         }
@@ -25,12 +27,16 @@ static Entity makeEntity(Universe verse, string s, int x, int y){
             ent.add(SpriteRender("sprites/crate.png", vec2i(32, 32), SpriteLayer.Door)); 
             ent.add(TileBlock());
             ent.add(MapPos(vec2i(x, y)));
-            ent.add(Contents());
+            Contents* c = ent.add(Contents());
+            c.addContents(makeEntity(verse, "Sword", x, y));
+            ent.add(HP(3));
             ent.add(AttackBait());
             break;
         }
         case("Sword"):{
             ent.add(SpriteRender("sprites/claymore.png", vec2i(32, 32), SpriteLayer.Item));
+            ent.add(Metal());
+            ent.add(Weapon(Attack(3)));
             break;
         }
         default:

@@ -117,7 +117,7 @@ class LevelMap{
             alreadyUsed ~= nextIndex;
             Rect space = partitions[nextIndex];
             int minX, minY;
-//writeln("-----\n mins.x:",space.mins.x,"  mins.y:",space.mins.y,        "\n max.x:",space.maxs.x," max.y:",space.maxs.y,        "\n minRoomWidth:",minRoomWidth," minRoomHeight:",minRoomHeight,);
+            //writeln("-----\n mins.x:",space.mins.x,"  mins.y:",space.mins.y,        "\n max.x:",space.maxs.x," max.y:",space.maxs.y,        "\n minRoomWidth:",minRoomWidth," minRoomHeight:",minRoomHeight,);
             if(space.mins.x == space.maxs.x - minRoomWidth){
                 minX = cast(int)space.mins.x;
             } else {
@@ -160,7 +160,6 @@ class LevelMap{
         }
     }
     private bool plumbLineToPath(Room room){
-//auto perf = Perf(null);
         int side = uniform(0, 4, rand);
         int xPos, yPos; //Position of the door to be placed
         int xWalkDelta, yWalkDelta; //How much to offset each of these values (-1, 0, or 1) each step depending on what dir we're walking
@@ -318,10 +317,15 @@ public struct Tile{
     Set!Entity ents;
     Entity[] entsWith(Component)(){
         Entity[] result;
+        Entity[] invalids;
         foreach(Entity ent ; ents){
+            if(!ent.valid){ invalids ~= ent; continue; }
             if(ent.has!Component){
                 result ~= ent;
             }
+        }
+        foreach(Entity inv ; invalids){
+            ents.remove(inv);
         }
         return result;
     }
