@@ -14,3 +14,5 @@ roguelike-test-*
 *.obj
 *.lst
 *.pdb
+optional/
+.vscode/
