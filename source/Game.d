@@ -5,6 +5,7 @@ import levelmap;
 import events;
 import components;
 import systems;
+import renderer;
 
 import std.stdio;
 import ecsd;
@@ -20,6 +21,22 @@ void init(ref AppStartup s){
   uni = lm.verse;
     writeln("init");
   //lm.lookForEnts();
+}
+
+@EventSubscriber
+void pickUp(ref PickUp p){
+  MapPos* pPos = player.get!MapPos;
+  Tile curTile = lm.getTile(pPos.x, pPos.y);
+  Entity[] ents = curTile.entsWith!CanPickUp;
+  writeln(__LINE__);
+  if(ents.length > 0){
+    //Obviously change this when there's more than just swords to pick up
+    PrimaryWeaponSlot* pWSlot = player.get!PrimaryWeaponSlot;
+    (ents[0]).remove!MapPos;
+    (ents[0].get!SpriteRender()).enabled = false;
+    pWSlot.equip(ents[0]);
+    writeln(__LINE__);
+  }
 }
 
 @EventSubscriber

@@ -3,6 +3,7 @@ module levelmap;
 import events;
 import app;
 import ecsd;
+import ecsd.userdata;
 import renderer;
 import entitycreation;
 import perf;
@@ -25,6 +26,25 @@ LevelMap levelinit(int x, int y){
     return lm;
 }
 
+private LevelMap[Universe] levelMaps;
+LevelMap getMapForUniverse(Universe uni)
+{
+    return levelMaps[uni];
+}
+
+void placeEntity(Entity ent, vec2i tilePos)
+{
+    auto level = ent.universe.getUserdata!LevelMap;
+    if(auto pos = ent.tryGet!MapPos)
+    {
+        level.getTile(pos.position).ents.remove(ent);
+        pos.position = tilePos;
+    }
+    else
+        ent.add(MapPos(tilePos));
+    level.getTile(tilePos).ents.add(ent);
+}
+
 class LevelMap{
     public:
         int levelNum;
@@ -42,6 +62,8 @@ class LevelMap{
         this(int _x, int _y){
             verse = allocUniverse();
             registration(verse);
+            //verse.setUserdata(this);
+            //levelMaps[verse] = this;
             
             rand = Random(seed);
 
@@ -190,7 +212,7 @@ class LevelMap{
         int attempts = 0;
         while(true){
             if(attempts++ >= 100){
-                writeln("Aborted! PL1");
+                writeln("Aborted! ", __FILE__, " line ", __LINE__);
                 return false;
             }
             nextX += xWalkDelta;

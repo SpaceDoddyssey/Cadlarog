@@ -20,7 +20,6 @@ float cameraXOffset = 15, cameraYOffset = -10;
 
 ComponentCache!(Transform, SpriteRender) spriteDrawables;
 SDL_Texture*[string] textureCache;
-Sprite[] sprites;
 
 enum SpriteLayer{
     Background = -1,
@@ -48,21 +47,6 @@ struct SpriteRender{
         string path(){
             return pathString;
         }
-}
-
-class Sprite{
-    SDL_Texture* tex;
-    SDL_Rect rect;
-    this(SDL_Texture* tex, int w, int h)
-    {
-        this.tex = tex;
-        rect = SDL_Rect(0, 0, w, h);
-    }
-    void setPosition(int x, int y)
-    {
-        rect.x = x;
-        rect.y = y;
-    }
 }
 
 @EventSubscriber
@@ -164,15 +148,6 @@ void cameraMove(ref CameraMove m){
         cameraYOffset += 0.3; break;
     default:
   }
-}
-
-Sprite registerSprite(Sprite s, string str, int x, int y){
-    SDL_Texture *texture = getTexture(str);
-    s.tex = texture;
-    s.rect.x = 32; s.rect.y = 32;
-    s.setPosition(x, y);
-    sprites ~= s;
-    return s;
 }
 
 SDL_Texture* getTexture(string path)

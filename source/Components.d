@@ -5,6 +5,7 @@ import std.stdio;
 import renderer;
 import events;
 import std.stdio;
+import std.typecons;
 
 struct HP{
     int curHP, maxHP, damRed = 0;
@@ -13,12 +14,10 @@ struct HP{
         curHP = maxHP = h;
     }
     void onComponentAdded(Universe verse, EntityID id){
-writeln("hp added");
         ent = Entity(id);
         (ent.get!PubSub).subscribe(&receiveAttack);
     }
-    public void setDR(int d){ damRed = d; }
-    public void takeDamage(int d){
+    void takeDamage(int d){
         if (d > damRed) { curHP -= (d - damRed); } 
         if(curHP <= 0){
             (ent.get!PubSub).publish(DeathEvent());
@@ -27,13 +26,8 @@ writeln("hp added");
         //handle death - expand this in general ----------------- 
     }
     void receiveAttack(Entity e, ref AttackEvent a){
-writeln("Hello");
         int d = a.damage;
-        if (d > damRed) { curHP -= (d - damRed); } 
-        if(curHP <= 0){
-            (ent.get!PubSub).publish(DeathEvent());
-            ent.free();
-        }
+        takeDamage(d);
     }
 }
 
@@ -66,6 +60,9 @@ struct Contents{
     Entity[] contents;
     alias contents this;
     Entity ent = void;
+    //static import levelmap;
+    //levelmap.Tile t;
+
     void onComponentAdded(Universe verse, EntityID id){
         ent = Entity(id);
         (ent.get!PubSub).subscribe(&die);
@@ -80,10 +77,13 @@ struct Contents{
         contents ~= e;
     }
     void die(Entity e, ref DeathEvent d){
+        MapPos* thisPos = ent.get!MapPos;
         foreach(Entity cont ; contents){
             (cont.get!SpriteRender()).enabled = true;
-            vec2i pos = (ent.get!MapPos).position;
+            vec2i pos = thisPos.position;
             cont.add(MapPos(pos));
+            static import levelmap;
+            levelmap.placeEntity(cont, pos);
         }
     }
 }
@@ -95,6 +95,30 @@ struct TileBlock{}
 struct Wood{}
 struct Metal{}
 struct CanPickUp{}
+
+struct Stairs{}
+
+struct PrimaryWeaponSlot{
+    Attack defaultAttack;
+    Nullable!Entity equipped;
+    this(Attack d){
+        defaultAttack = d;
+    }
+    void equip(Entity w){
+        if(w.has!Weapon){
+            equipped = w;
+        } else { writeln("Can't equip that there!"); }
+    }
+    void unequip(){ equipped.nullify(); }
+    Attack attack(){
+        if(!equipped.isNull){
+            Weapon* wep = equipped.get.get!Weapon();
+            return wep.attack;
+        } else {
+            return defaultAttack;
+        }
+    }
+}
 
 struct Weapon{
     Attack attack;
@@ -119,6 +143,7 @@ static void registration(Universe verse){
     verse.registerComponent!Weapon;
     verse.registerComponent!Attack;
     verse.registerComponent!CanPickUp;
+    verse.registerComponent!PrimaryWeaponSlot;
 }
 /*
     void onComponentAdded(Universe, EntityID)

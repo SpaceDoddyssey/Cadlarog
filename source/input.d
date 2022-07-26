@@ -57,6 +57,9 @@ void processEvent(ref SDLEvent ev)
 
 @EventSubscriber
 void controlHandling(ref LoopStruct l){
+	//Escape key exit handled in app.d
+
+	//Camera movement
     if(isKeyPressed(SDLK_DOWN))
         publish(CameraMove(Dir.Down)); 
     if(isKeyPressed(SDLK_UP))
@@ -66,6 +69,7 @@ void controlHandling(ref LoopStruct l){
     if(isKeyPressed(SDLK_RIGHT))
         publish(CameraMove(Dir.Right));
     
+	//Player movement
     if(isKeyPressed(SDLK_s, true))
         publish(PlayerMove(Dir.Down)); 
     if(isKeyPressed(SDLK_w, true))
@@ -74,6 +78,10 @@ void controlHandling(ref LoopStruct l){
         publish(PlayerMove(Dir.Left)); 
     if(isKeyPressed(SDLK_d, true))
         publish(PlayerMove(Dir.Right));
+
+	//Player actions
+	if(isKeyPressed(SDLK_p, true))
+		publish(PickUp());
 }
 
 /*
