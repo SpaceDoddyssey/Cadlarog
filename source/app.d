@@ -17,6 +17,7 @@ void main()
     debug sharedLog.logLevel = LogLevel.all;
     else sharedLog.logLevel = LogLevel.info;
 
+writeln("App starting");
     init();
     //import std: array, sort, each;
 /*scope(exit) Perf

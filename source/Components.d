@@ -4,7 +4,6 @@ import ecsd;
 import std.stdio;
 import renderer;
 import events;
-import std.stdio;
 import std.typecons;
 
 struct HP{
@@ -23,7 +22,7 @@ struct HP{
             (ent.get!PubSub).publish(DeathEvent());
             ent.free();
         }
-        //handle death - expand this in general ----------------- 
+        //Note: maybe should handle death better 
     }
     void receiveAttack(Entity e, ref AttackEvent a){
         int d = a.damage;
@@ -60,8 +59,6 @@ struct Contents{
     Entity[] contents;
     alias contents this;
     Entity ent = void;
-    //static import levelmap;
-    //levelmap.Tile t;
 
     void onComponentAdded(Universe verse, EntityID id){
         ent = Entity(id);
@@ -82,8 +79,7 @@ struct Contents{
             (cont.get!SpriteRender()).enabled = true;
             vec2i pos = thisPos.position;
             cont.add(MapPos(pos));
-            static import levelmap;
-            levelmap.placeEntity(cont, pos);
+            publish(PlaceEntity(cont, pos));
         }
     }
 }

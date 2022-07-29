@@ -4,6 +4,7 @@ import ecsd;
 import events;
 import renderer;
 import components;
+import playermodule;
 
 import dplug.math.vector;
 import bindbc.sdl;
@@ -11,6 +12,13 @@ import bindbc.sdl.image;
 import std.stdio;
 
 static Entity makeEntity(Universe verse, string s, int x, int y){
+    if(s == "Player"){
+        MapPos* mp = player.get!MapPos;
+        mp.position = vec2i(x, y);
+        Transform* t = player.get!Transform;
+        t.position = vec2i(x*32, y*32);
+            return player;
+    }
     Entity ent = Entity(verse.allocEntity);
     ent.add(Transform(vec2i(x*32, y*32)));
     ent.add(PubSub());
@@ -45,17 +53,14 @@ static Entity makeEntity(Universe verse, string s, int x, int y){
     return ent;
 }
 
-static Entity makePlayer(Universe verse, int x, int y){
+static Entity makePlayer(Universe verse){
     Entity ent = Entity(verse.allocEntity);
     ent.add(PubSub());
     ent.add(SpriteRender("sprites/playerChar.png", vec2i(32, 32), SpriteLayer.Character));
-    ent.add(Transform(vec2i(x*32, y*32)));
-    ent.add(MapPos(vec2i(x, y)));
+    ent.add(Transform(vec2i(0, 0)));
+    ent.add(MapPos(vec2i(0, 0)));
     ent.add(HP(10));
     ent.add(PrimaryWeaponSlot(Attack(1)));
-    cameraXOffset = x - 15;
-    cameraYOffset = y - 10;
-    import game: player;
     player = ent;
     return ent;
 }

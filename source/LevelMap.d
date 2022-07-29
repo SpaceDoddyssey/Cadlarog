@@ -8,6 +8,7 @@ import renderer;
 import entitycreation;
 import perf;
 import components;
+import playermodule;
 import set;
 
 import dplug.math.vector;
@@ -17,12 +18,12 @@ import bindbc.sdl.image;
 import std.random;
 import std.algorithm.searching;
 
-LevelMap levelinit(int x, int y){ 
-    LevelMap lm = new LevelMap(x, y);
-    spriteDrawables = new typeof(spriteDrawables)(lm.verse);
+mixin registerSubscribers;
 
+LevelMap levelinit(Universe verse, int x, int y){ 
     writeln("level init");
-
+    LevelMap lm = new LevelMap(verse, x, y);
+    spriteDrawables = new typeof(spriteDrawables)(lm.verse);
     return lm;
 }
 
@@ -32,16 +33,19 @@ LevelMap getMapForUniverse(Universe uni)
     return levelMaps[uni];
 }
 
-void placeEntity(Entity ent, vec2i tilePos)
+@EventSubscriber
+void placeEntity(ref PlaceEntity p)
 {
+    Entity ent = p.e;
+    vec2i tilePos = p.v;
     auto level = ent.universe.getUserdata!LevelMap;
-    if(auto pos = ent.tryGet!MapPos)
-    {
-        level.getTile(pos.position).ents.remove(ent);
+    if(auto pos = ent.tryGet!MapPos) {
+        Tile t = level.getTile(pos.position);
+        t.ents.remove(ent);
         pos.position = tilePos;
-    }
-    else
+    } else {
         ent.add(MapPos(tilePos));
+    }
     level.getTile(tilePos).ents.add(ent);
 }
 
@@ -55,15 +59,11 @@ class LevelMap{
         int maxWidth, maxHeight;
         int minRoomWidth = 5, minRoomHeight = 5;
         int maxRoomWidth = 8, maxRoomHeight = 8;
-        //Chunk[] chunks;
         Tile[] tiles;
         Room[] rooms;
         float tileOffsetX = 0, tileOffsetY = 0;
-        this(int _x, int _y){
-            verse = allocUniverse();
-            registration(verse);
-            //verse.setUserdata(this);
-            //levelMaps[verse] = this;
+        this(Universe uni, int _x, int _y){
+            verse = uni;
             
             rand = Random(seed);
 
@@ -78,8 +78,9 @@ class LevelMap{
                 while(!plumbLineToPath(r)){}
             }
             cullDeadEnds();
-            Room r = placePlayer();
+            Room r = placeEntInRandomRoom("Player");
             placeEntInRandomRoom("Crate");
+            placeEntInRoom("Crate", r);
             placeEntInRoom("Crate", r);
             texturePhase();
         }
@@ -271,18 +272,7 @@ class LevelMap{
             }
         }
     }
-    private Room placePlayer(){
-        int whichRoom = cast(int)uniform(0, rooms.length, rand);
-        Room r = rooms[whichRoom];
-        int playerX = cast(int)uniform(r.rect.mins.x+1, r.rect.maxs.x, rand);
-        int playerY = cast(int)uniform(r.rect.mins.y+1, r.rect.maxs.y, rand);
-        Entity pEnt = makePlayer(verse, playerX, playerY);
-        writeln("Spawning player at ", playerX, " ", playerY );
-        getTile(playerX, playerY).add(pEnt);
-        return r;
-        //Expand -------------------------------
-    }
-    private void placeEntInRandomRoom(string s){
+    private Room placeEntInRandomRoom(string s){
         int whichRoom = cast(int)uniform(0, rooms.length, rand);
         Room r = rooms[whichRoom];
         int entX = cast(int)uniform(r.rect.mins.x+1, r.rect.maxs.x, rand);
@@ -290,6 +280,15 @@ class LevelMap{
         Entity pEnt = makeEntity(verse, s, entX, entY);
         writeln("Spawning entity at ", entX, " ", entY );
         getTile(entX, entY).add(pEnt);
+        if(s == "Player"){
+            MapPos* pMP = player.get!MapPos;
+            pMP.position = vec2i(entX, entY);
+            Transform* pT = player.get!Transform;
+            pT.position = vec2i(entX*32, entY*32);
+            cameraXOffset = entX / 2;
+            cameraYOffset = entY / 2;
+        }
+        return r;
         //Expand -------------------------------
         //Make sure this doesn't place an object on a tile that's already full
     }
@@ -316,13 +315,12 @@ class LevelMap{
             t.tileEnt.add(SpriteRender(target, vec2i(32, 32), SpriteLayer.Floor));
         }
     }
-    void lookForEnts(){
+    void lookForEnts(){ //debug function
         foreach(Tile t ; tiles){
             if(t.ents.length() != 0){
                 writeln("Ent(s) found at ", t.mpos.x, " ", t.mpos.y);
             }
-        }
-        writeln("done looking");
+        } writeln("done looking");
     }
 }
 
@@ -348,6 +346,7 @@ public struct Tile{
         }
         foreach(Entity inv ; invalids){
             ents.remove(inv);
+            //Worried about this not happening if I access things through other methods
         }
         return result;
     }

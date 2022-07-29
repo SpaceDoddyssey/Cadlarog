@@ -1,6 +1,8 @@
 module events;
 
 import bindbc.sdl;
+import dplug.math.vector;
+import ecsd;
 
 struct AppStartup{}
 struct LoopStruct{}
@@ -33,4 +35,13 @@ enum Dir{
 struct SDLEvent{
     SDL_Event* event;
     alias event this;
+}
+
+struct PlaceEntity{
+  Entity e = void;
+  vec2i v;
+  this(Entity ent, vec2i vec){
+    e = ent;
+    v = vec;
+  }
 }

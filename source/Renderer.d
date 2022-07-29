@@ -55,7 +55,11 @@ void init(ref AppStartup s){
 //============================================================================
     //This code provided by Steven Dwy, me@yoplitein.net
 
-    SDLSupport sdlVer = loadSDL();
+    SDLSupport sdlVer;
+    version(Win32)
+        sdlVer = loadSDL("SDL2_x86.dll");
+    else
+        sdlVer = loadSDL();
     if(sdlVer != sdlSupport)
     {
         if(sdlVer == SDLSupport.noLibrary)
@@ -63,7 +67,12 @@ void init(ref AppStartup s){
         else if(sdlVer == SDLSupport.badLibrary)
             warning("libSDL seems to be outdated");
     }
-    SDLImageSupport sdlImageVer = loadSDLImage();
+    
+    SDLImageSupport sdlImageVer;
+    version(Win32)
+        sdlImageVer = loadSDLImage("SDL2_x86.dll");
+    else
+        sdlImageVer = loadSDLImage();
     if(sdlImageVer != sdlImageSupport)
     {
         if(sdlImageVer == SDLImageSupport.noLibrary)

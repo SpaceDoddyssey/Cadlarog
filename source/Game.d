@@ -1,26 +1,30 @@
 module game;
 
-// import app;
 import levelmap;
 import events;
 import components;
 import systems;
 import renderer;
+import playermodule;
+import entitycreation;
 
 import std.stdio;
 import ecsd;
+import ecsd.userdata;
 mixin registerSubscribers;
 
-Entity player = void;
 LevelMap lm;
 Universe uni;
 
 @EventSubscriber
-void init(ref AppStartup s){ 
-  lm = levelinit(50, 50);
-  uni = lm.verse;
-    writeln("init");
-  //lm.lookForEnts();
+void init(ref AppStartup s){
+  uni = allocUniverse();
+  registration(uni);
+
+  player = makePlayer(uni);
+  lm = levelinit(uni, 50, 50);
+  
+  setUserdata!LevelMap(uni, lm);
 }
 
 @EventSubscriber
@@ -28,14 +32,12 @@ void pickUp(ref PickUp p){
   MapPos* pPos = player.get!MapPos;
   Tile curTile = lm.getTile(pPos.x, pPos.y);
   Entity[] ents = curTile.entsWith!CanPickUp;
-  writeln(__LINE__);
   if(ents.length > 0){
     //Obviously change this when there's more than just swords to pick up
     PrimaryWeaponSlot* pWSlot = player.get!PrimaryWeaponSlot;
     (ents[0]).remove!MapPos;
     (ents[0].get!SpriteRender()).enabled = false;
     pWSlot.equip(ents[0]);
-    writeln(__LINE__);
   }
 }
 
@@ -62,8 +64,6 @@ void playerMove(ref PlayerMove m){
 
     lm.getTile(originalX, originalY).remove(player);
     lm.getTile(pMapPos.x, pMapPos.y).add(player);
-  //writeln(">", pTransform.x, " ", pTransform.y);
-  //writeln(pMapPos.x, " ", pMapPos.y);
   } else {
     if(blockingEnts.length != 0){ //Probably remove this once walls are blocking ents
       bumpInto(blockingEnts[0], player);
