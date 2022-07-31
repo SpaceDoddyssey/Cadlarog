@@ -47,6 +47,14 @@ static Entity makeEntity(Universe verse, string s, int x, int y){
             ent.add(CanPickUp());
             break;
         }
+        case("Slime"):{
+            ent.add(SpriteRender("sprites/slime_purple.png", vec2i(32, 32), SpriteLayer.Character));
+            ent.add(HP(3));
+            ent.add(TileBlock());
+            ent.add(SlimeAI());
+            ent.add(AttackBait());
+            break;
+        }
         default:
             break;
     }
@@ -59,6 +67,7 @@ static Entity makePlayer(Universe verse){
     ent.add(SpriteRender("sprites/playerChar.png", vec2i(32, 32), SpriteLayer.Character));
     ent.add(Transform(vec2i(0, 0)));
     ent.add(MapPos(vec2i(0, 0)));
+    ent.add(TileBlock());
     ent.add(HP(10));
     ent.add(PrimaryWeaponSlot(Attack(1)));
     player = ent;

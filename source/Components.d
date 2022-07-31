@@ -5,6 +5,7 @@ import std.stdio;
 import renderer;
 import events;
 import std.typecons;
+import std.random;
 
 struct HP{
     int curHP, maxHP, damRed = 0;
@@ -124,6 +125,29 @@ struct Attack{
     int damage;
 }
 
+struct SlimeAI{
+    Dir curDir;
+    Entity ent = void;
+    void onComponentAdded(Universe verse, EntityID id){
+        ent = Entity(id);
+        curDir = cast(Dir)uniform(2, 4);
+writeln("direction generated = ", cast(int)curDir);
+        subscribe(&onTick);
+    }
+    void onTick(ref TurnTick t){
+        if(ent.valid){
+            publish(NpcMove(ent));
+        }
+    }
+    void turnAround(){
+        if(curDir == Dir.Up){
+            curDir = Dir.Down;
+        } else {
+            curDir = Dir.Up;
+        }
+    }
+}
+
 static void registration(Universe verse){
     verse.registerBuiltinComponents;
     verse.registerComponent!Transform;
@@ -140,7 +164,10 @@ static void registration(Universe verse){
     verse.registerComponent!Attack;
     verse.registerComponent!CanPickUp;
     verse.registerComponent!PrimaryWeaponSlot;
+    verse.registerComponent!SlimeAI;
+    verse.registerComponent!Stairs;
 }
+
 /*
     void onComponentAdded(Universe, EntityID)
     {

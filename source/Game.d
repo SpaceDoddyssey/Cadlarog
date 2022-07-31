@@ -11,6 +11,7 @@ import entitycreation;
 import std.stdio;
 import ecsd;
 import ecsd.userdata;
+import dplug.math.vector;
 mixin registerSubscribers;
 
 LevelMap lm;
@@ -42,6 +43,29 @@ void pickUp(ref PickUp p){
 }
 
 @EventSubscriber
+void npcMove(ref NpcMove n){
+  Entity ent = n.e;
+  MapPos* mp = ent.get!MapPos;
+  //Obviously this will change when there are other types of monsters
+  SlimeAI* Sai = ent.get!SlimeAI; 
+  int xDelta = 0, yDelta = 0;
+  if(Sai.curDir == Dir.Left){ xDelta = -1; }
+  if(Sai.curDir == Dir.Right){ xDelta = 1; }
+  if(Sai.curDir == Dir.Up){ yDelta = -1; }
+  if(Sai.curDir == Dir.Down){ yDelta = 1; }
+
+  Tile target = lm.getTile(mp.x + xDelta, mp.y + yDelta);
+  Entity[] blockingEnts = target.entsWith!(TileBlock)();
+  if(target.type == TileType.Floor && blockingEnts.length == 0){
+    vec2i source = vec2i(mp.x, mp.y);
+    vec2i dest = vec2i(mp.x + xDelta, mp.y + yDelta);
+    lm.moveEntity(ent, source, dest);
+  } else if(target.type != TileType.Floor || (blockingEnts.length != 0 && blockingEnts[0] != player)){
+    Sai.turnAround();
+  }
+}
+
+@EventSubscriber
 void playerMove(ref PlayerMove m){
   int xDelta = 0, yDelta = 0;
   if(m.dir == Dir.Left){ xDelta = -1; }
@@ -53,20 +77,13 @@ void playerMove(ref PlayerMove m){
   Tile target = lm.getTile(pMapPos.x + xDelta, pMapPos.y + yDelta);
   Entity[] blockingEnts = target.entsWith!(TileBlock)();
   if(target.type == TileType.Floor && blockingEnts.length == 0){
-    int originalX = pMapPos.x;
-    int originalY = pMapPos.y;
-    pMapPos.x += xDelta;
-    pMapPos.y += yDelta;
-    Transform* pTransform = player.get!Transform;
-
-    pTransform.x += xDelta * 32;
-    pTransform.y += yDelta * 32;
-
-    lm.getTile(originalX, originalY).remove(player);
-    lm.getTile(pMapPos.x, pMapPos.y).add(player);
+    vec2i source = vec2i(pMapPos.x, pMapPos.y);
+    vec2i dest = vec2i(pMapPos.x + xDelta, pMapPos.y + yDelta);
+    lm.moveEntity(player, source, dest);
   } else {
     if(blockingEnts.length != 0){ //Probably remove this once walls are blocking ents
       bumpInto(blockingEnts[0], player);
     }
   }
+  publish(TurnTick());
 }

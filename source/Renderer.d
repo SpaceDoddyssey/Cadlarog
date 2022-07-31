@@ -1,22 +1,25 @@
 module renderer;
 
 import ecsd;
-//import game;
 import events;
 import perf;
 import components;
+import guiinfo;
 
 import std;
 import std.experimental.logger;
 import dplug.math.vector;
 import bindbc.sdl;
 import bindbc.sdl.image;
+import bindbc.sdl.ttf;
 import std.stdio;
+
 mixin registerSubscribers;
 
 SDL_Window* window;
 SDL_Renderer* renderer;
-float cameraXOffset = 15, cameraYOffset = -10;
+float cameraXOffset; 
+float cameraYOffset;
 
 ComponentCache!(Transform, SpriteRender) spriteDrawables;
 SDL_Texture*[string] textureCache;
@@ -51,10 +54,7 @@ struct SpriteRender{
 
 @EventSubscriber
 void init(ref AppStartup s){ 
-    //Create the window
-//============================================================================
-    //This code provided by Steven Dwy, me@yoplitein.net
-
+    //Load general SDL library
     SDLSupport sdlVer;
     version(Win32)
         sdlVer = loadSDL("SDL2_x86.dll");
@@ -67,7 +67,20 @@ void init(ref AppStartup s){
         else if(sdlVer == SDLSupport.badLibrary)
             warning("libSDL seems to be outdated");
     }
-    
+    //Load SDL text library
+    SDLTTFSupport sdlTTFVer;
+    version(Win32)
+        sdlTTFVer = loadSDLTTF("SDL2_ttf_x86.dll");
+    else
+        sdlTTFVer = loadSDLTTF();
+    if(sdlTTFVer != sdlTTFSupport)
+    {
+        if(sdlTTFVer == SDLTTFSupport.noLibrary)
+            fatalf("could not load ttf libSDL");
+        else if(sdlTTFVer == SDLTTFSupport.badLibrary)
+            warning("ttf libSDL seems to be outdated");
+    }
+    //Load SDL image library
     SDLImageSupport sdlImageVer;
     version(Win32)
         sdlImageVer = loadSDLImage("SDL2_x86.dll");
@@ -87,12 +100,12 @@ void init(ref AppStartup s){
     
     if(SDL_Init(SDL_INIT_EVENTS | SDL_INIT_VIDEO) != 0)
         fatalf("failed to initialize SDL: %s", SDL_GetError().fromStringz);
-    
+
     enum vpWidth = 1280;
     enum vpHeight = 720;
 
     window = SDL_CreateWindow(
-        "Roguelike",
+        "Cadlarog",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
         vpWidth, vpHeight,
         SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_FOCUS

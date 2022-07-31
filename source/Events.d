@@ -12,10 +12,21 @@ struct CameraMove{ Dir dir; this(Dir d){ dir = d; } }
 struct PlayerMove{ Dir dir; this(Dir d){ dir = d; } }
 struct PickUp{}
 
+struct NpcMove{
+  Entity e = void;
+  //vec2i v;
+  this(Entity ent){
+    e = ent;
+    //v = vec;
+  }
+}
+
 struct OpenEvent{}
 struct CloseEvent{}
 
 struct DeathEvent{}
+
+struct TurnTick{}
 
 struct AttackEvent{
   import components : Attack;

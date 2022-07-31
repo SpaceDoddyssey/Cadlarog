@@ -61,7 +61,6 @@ class LevelMap{
         int maxRoomWidth = 8, maxRoomHeight = 8;
         Tile[] tiles;
         Room[] rooms;
-        float tileOffsetX = 0, tileOffsetY = 0;
         this(Universe uni, int _x, int _y){
             verse = uni;
             
@@ -72,7 +71,7 @@ class LevelMap{
             tiles = new Tile[_x * _y];
             initialize();
             Rect[] partitions = partitionPhase(4);
-            roomGenPhase(partitions, 6);
+            roomGenPhase(partitions, 11);
             foreach(Room r ; rooms){
                 while(!plumbLineToPath(r)){}
                 while(!plumbLineToPath(r)){}
@@ -82,6 +81,7 @@ class LevelMap{
             placeEntInRandomRoom("Crate");
             placeEntInRoom("Crate", r);
             placeEntInRoom("Crate", r);
+            placeEntInRoom("Slime", r);
             texturePhase();
         }
     ref Tile getTile(int x, int y) { return tiles[y * maxWidth + x]; }
@@ -92,7 +92,7 @@ class LevelMap{
         for(int x = 0; x < maxWidth; x++){
             for(int y = 0; y < maxHeight; y++){
                 Tile T;
-                T.setPos(cast(int)(-tileOffsetX+(x*tileSize)), cast(int)(-tileOffsetY+(y*tileSize)));
+                T.setPos(cast(int)(x*tileSize), cast(int)(y*tileSize));
                 T.mpos.x = x; T.mpos.y = y;
                 T.type = TileType.Wall;
                 getTile(x,y) = T;
@@ -281,12 +281,8 @@ class LevelMap{
         writeln("Spawning entity at ", entX, " ", entY );
         getTile(entX, entY).add(pEnt);
         if(s == "Player"){
-            MapPos* pMP = player.get!MapPos;
-            pMP.position = vec2i(entX, entY);
-            Transform* pT = player.get!Transform;
-            pT.position = vec2i(entX*32, entY*32);
-            cameraXOffset = entX / 2;
-            cameraYOffset = entY / 2;
+            cameraXOffset = entX - 15;
+            cameraYOffset = entY - 15;
         }
         return r;
         //Expand -------------------------------
@@ -300,7 +296,7 @@ class LevelMap{
         getTile(entX, entY).add(pEnt);
     }
     private void texturePhase(){
-//auto perf = Perf(null);
+auto perf = Perf(null);
         foreach(t; tiles){
             string target;
             switch(t.type){
@@ -321,6 +317,19 @@ class LevelMap{
                 writeln("Ent(s) found at ", t.mpos.x, " ", t.mpos.y);
             }
         } writeln("done looking");
+    }
+    void moveEntity(Entity e, vec2i source, vec2i dest){
+        if(e.has!MapPos){
+            MapPos* m = e.get!MapPos;
+            m.position = dest;
+        }
+        if(e.has!Transform){
+            Transform* t = e.get!Transform;
+            t.position = vec2i(dest.x * 32, dest.y * 32);
+        }
+
+        getTile(source).remove(e);
+        getTile(dest).add(e);
     }
 }
 
