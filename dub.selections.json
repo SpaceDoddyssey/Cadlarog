@@ -5,6 +5,8 @@
 		"bindbc-sdl": "1.1.2",
 		"dplug": "12.7.0",
 		"ecsd": {"path":"ecsd"},
-		"intel-intrinsics": "1.10.2"
+		"intel-intrinsics": "1.10.2",
+		"stdx-allocator": "2.77.5",
+		"vibe-d": "0.9.5"
 	}
 }

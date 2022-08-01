@@ -20,6 +20,9 @@ import std.algorithm.searching;
 
 mixin registerSubscribers;
 
+//import std.file: writeBinary = write, readBinary = read;
+//import vibe.data.bson;
+
 LevelMap levelinit(Universe verse, int x, int y){ 
     writeln("level init");
     LevelMap lm = new LevelMap(verse, x, y);
@@ -79,16 +82,15 @@ class LevelMap{
             cullDeadEnds();
             Room r = placeEntInRandomRoom("Player");
             placeEntInRandomRoom("Crate");
-            placeEntInRoom("Crate", r);
-            placeEntInRoom("Crate", r);
+            for(int i = 0; i < 2; i++){
+                placeEntInRoom("Crate", r);
+            }
             placeEntInRoom("Slime", r);
             texturePhase();
         }
     ref Tile getTile(int x, int y) { return tiles[y * maxWidth + x]; }
     ref Tile getTile(vec2i pos) { return getTile(pos.v.tupleof); }
     private void initialize(){
-        //tileOffsetX = tileSize * (maxWidth/2);
-        //tileOffsetY = tileSize * (maxHeight/2);
         for(int x = 0; x < maxWidth; x++){
             for(int y = 0; y < maxHeight; y++){
                 Tile T;

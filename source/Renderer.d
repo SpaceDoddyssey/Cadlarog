@@ -118,10 +118,13 @@ void init(ref AppStartup s){
         SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE
     );
     if(renderer is null) fatalf("failed to create renderer: %s", SDL_GetError().fromStringz);
+
+    TTF_Init();
 }
 
 @EventSubscriber
 void appShutdown(ref FinishStruct f){
+    TTF_Quit();
     SDL_Quit();
     SDL_DestroyWindow(window);
 }
@@ -133,7 +136,7 @@ void loop(ref LoopStruct l){
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    if(spriteDrawables.refresh(ForceRefresh.yes)){
+    if(spriteDrawables.refresh()){
         spriteDrawables.entities.sort!"a.spriteRender.layer < b.spriteRender.layer";
     }
     //writeln("xOffset: ", cameraXOffset);
