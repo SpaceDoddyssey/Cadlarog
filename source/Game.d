@@ -56,12 +56,18 @@ void npcMove(ref NpcMove n){
 
   Tile target = lm.getTile(mp.x + xDelta, mp.y + yDelta);
   Entity[] blockingEnts = target.entsWith!(TileBlock)();
-  if(target.type == TileType.Floor && blockingEnts.length == 0){
-    vec2i source = vec2i(mp.x, mp.y);
-    vec2i dest = vec2i(mp.x + xDelta, mp.y + yDelta);
-    lm.moveEntity(ent, source, dest);
-  } else if(target.type != TileType.Floor || (blockingEnts.length != 0 && blockingEnts[0] != player)){
+  if(blockingEnts.length == 0){
+    if(target.type == TileType.Floor){
+      vec2i source = vec2i(mp.x, mp.y);
+      vec2i dest = vec2i(mp.x + xDelta, mp.y + yDelta);
+      lm.moveEntity(ent, source, dest);
+    } else {
+      Sai.turnAround();
+    }
+  } else if(blockingEnts[0] != player){
     Sai.turnAround();
+  } else {
+    player.publish(AttackEvent(ent, player, (player.get!PrimaryWeaponSlot).attack));
   }
 }
 

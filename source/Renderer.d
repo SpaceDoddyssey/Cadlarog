@@ -119,11 +119,21 @@ void init(ref AppStartup s){
     );
     if(renderer is null) fatalf("failed to create renderer: %s", SDL_GetError().fromStringz);
 
+    //Initialize text rendering
     TTF_Init();
+    curFont = TTF_OpenFont(fontPath.toStringz(), fontSize);
+    if(curFont != null){
+        writeln("----font loaded");
+    }
+    texW = 0;
+    texH = 0;
+
+    addLogMessage("Welcome to Cadlarog");
 }
 
 @EventSubscriber
 void appShutdown(ref FinishStruct f){
+    TTF_CloseFont(curFont);
     TTF_Quit();
     SDL_Quit();
     SDL_DestroyWindow(window);
@@ -131,7 +141,7 @@ void appShutdown(ref FinishStruct f){
 
 @EventSubscriber
 void loop(ref LoopStruct l){
-    auto perf = Perf(null);
+//    auto perf = Perf(null);
     //Render the window
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
@@ -155,8 +165,44 @@ void loop(ref LoopStruct l){
             &rect,
         );
     }
-    
-    SDL_RenderPresent(renderer);
+
+//Text rendering
+    SDL_Surface*[] surfaces;
+    SDL_Texture*[] textures;
+    //int numMessages = 0;
+    for (int i = 0; i < messages.length; i++){
+        string curText = messages[i];
+        
+        SDL_Surface * surface = TTF_RenderText_Solid(curFont, curText.toStringz(), white);
+        surfaces ~= surface;
+        SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surface);
+        textures ~= texture;
+        SDL_QueryTexture(texture, null, null, &texW, &texH);
+        SDL_Rect dstrect = { 0, i*texH + 1, texW, texH };
+        SDL_RenderCopy(renderer, texture, null, &dstrect);
+
+        SDL_RenderPresent(renderer);
+
+        //numMessages++;
+    }
+    foreach(SDL_Texture* tex ; textures){
+        SDL_DestroyTexture(tex);
+    }
+    foreach(SDL_Surface* surf; surfaces){
+        SDL_FreeSurface(surf);
+    }
+    //write("Printed ");
+    //write(numMessages);
+    //writeln(" messages this frame");
+}
+
+struct TextBox{
+    SDL_Surface * surface;
+	SDL_Texture * texture;
+    this(string text){
+        surface = TTF_RenderText_Solid(curFont, text.toStringz(), white);
+	    texture = SDL_CreateTextureFromSurface(renderer, surface);
+    }
 }
 
 @EventSubscriber

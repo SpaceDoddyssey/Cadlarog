@@ -19,13 +19,13 @@ void main()
 
 writeln("App starting");
     init();
-    import std: array, sort, each;
+/*    import std: array, sort, each;
 scope(exit) Perf
     .times
     .byKeyValue
     .array
     .sort!"a.value > b.value"
-    .each!(p => writeln(p.key, " => ", p.value));
+    .each!(p => writeln(p.key, " => ", p.value));*/
 }
 
 void init(){
@@ -35,28 +35,30 @@ void init(){
 }
 
 void loop(){
-    auto perf = Perf(null);
+/*    auto perf = Perf(null);
     double lastFrame = nowSeconds;
     double fpsAccum = 0;
     int frames;
-    
+*/    
     while(true) {
-        const now = nowSeconds;
-        const frameDelta = now - lastFrame;
-        lastFrame = now;
+//        const now = nowSeconds;
+//        const frameDelta = now - lastFrame;
+//        lastFrame = now;
   
         publish!LoopStruct;
         if (processEvents() == ShouldExit.yes){
             break;
         }
-        frames++;
+//        frames++;
         
+/*
         fpsAccum += frameDelta;
         if(fpsAccum >= 1) {
             trace("%d fps", frames);
             fpsAccum -= 1;
             frames = 0;
         }
+*/
     }
 }
 

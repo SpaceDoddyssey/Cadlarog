@@ -2,10 +2,16 @@ module components;
 import dplug.math.vector;
 import ecsd;
 import std.stdio;
-import renderer;
-import events;
 import std.typecons;
 import std.random;
+import std.conv;
+
+import renderer;
+import events;
+import guiinfo;
+import playermodule;
+
+struct Name{ string name; alias name this; }
 
 struct HP{
     int curHP, maxHP, damRed = 0;
@@ -20,13 +26,26 @@ struct HP{
     void takeDamage(int d){
         if (d > damRed) { curHP -= (d - damRed); } 
         if(curHP <= 0){
+            Name* name = ent.get!Name;
+            if(*name == "Hero"){
+                addLogMessage("The Hero has fallen. All hope is lost!");
+            } else {
+                addLogMessage("The " ~ *name ~ " is destroyed");
+            }
             (ent.get!PubSub).publish(DeathEvent());
             ent.free();
         }
         //Note: maybe should handle death better 
     }
-    void receiveAttack(Entity e, ref AttackEvent a){
-        int d = a.damage;
+    void receiveAttack(Entity e, ref AttackEvent atEv){
+        if(atEv.source == player){
+            string s = "You deal " ~ to!string(atEv.a.damage) ~ " damage to the " ~ *(atEv.victim.get!Name);
+            addLogMessage(s);
+        } else if (atEv.victim == player){
+            string s = "The " ~ *(atEv.source.get!Name) ~ " deals " ~ to!string(atEv.a.damage) ~ " damage to you!";
+            addLogMessage(s);
+        }
+        int d = atEv.damage;
         takeDamage(d);
     }
 }
@@ -81,6 +100,7 @@ struct Contents{
             vec2i pos = thisPos.position;
             cont.add(MapPos(pos));
             publish(PlaceEntity(cont, pos));
+            addLogMessage("The crate dropped a sword!");
         }
     }
 }
@@ -152,6 +172,7 @@ static void registration(Universe verse){
     verse.registerBuiltinComponents;
     verse.registerComponent!Transform;
     verse.registerComponent!SpriteRender;
+    verse.registerComponent!Name;
     verse.registerComponent!HP;
     verse.registerComponent!MapPos;
     verse.registerComponent!Door;

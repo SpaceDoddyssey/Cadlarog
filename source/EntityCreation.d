@@ -5,11 +5,13 @@ import events;
 import renderer;
 import components;
 import playermodule;
+import guiinfo;
 
 import dplug.math.vector;
 import bindbc.sdl;
 import bindbc.sdl.image;
 import std.stdio;
+import std.conv;
 
 static Entity makeEntity(Universe verse, string s, int x, int y){
     if(s == "Player"){
@@ -23,6 +25,7 @@ static Entity makeEntity(Universe verse, string s, int x, int y){
     ent.add(Transform(vec2i(x*32, y*32)));
     ent.add(PubSub());
     ent.add(MapPos(vec2i(x, y)));
+    ent.add(Name(s));
     switch(s){
         case("Door"):{
             ent.add(SpriteRender("sprites/door_closed.png", vec2i(32, 32), SpriteLayer.Door));
@@ -63,6 +66,7 @@ static Entity makeEntity(Universe verse, string s, int x, int y){
 
 static Entity makePlayer(Universe verse){
     Entity ent = Entity(verse.allocEntity);
+    ent.add(Name("Hero"));
     ent.add(PubSub());
     ent.add(SpriteRender("sprites/playerChar.png", vec2i(32, 32), SpriteLayer.Character));
     ent.add(Transform(vec2i(0, 0)));
@@ -72,4 +76,13 @@ static Entity makePlayer(Universe verse){
     ent.add(PrimaryWeaponSlot(Attack(1)));
     player = ent;
     return ent;
+}
+
+@EventSubscriber
+void onEntityAttacked(ref EntityEvent!AttackEvent ev)
+{
+    if(ev.source == player){
+        string s = "You deal " ~ to!string(ev.a.damage) ~ " damage to the " ~ *(ev.victim.get!Name);
+        addLogMessage(s);
+    }
 }

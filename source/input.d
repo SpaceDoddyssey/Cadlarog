@@ -3,6 +3,7 @@ module input;
 import ecsd;
 import events;
 import levelmap;
+import playermodule;
 import bindbc.sdl;
 import dplug.math.vector;
 
@@ -69,19 +70,22 @@ void controlHandling(ref LoopStruct l){
     if(isKeyPressed(SDLK_RIGHT))
         publish(CameraMove(Dir.Right));
     
-	//Player movement
-    if(isKeyPressed(SDLK_s, true))
-        publish(PlayerMove(Dir.Down)); 
-    if(isKeyPressed(SDLK_w, true))
-        publish(PlayerMove(Dir.Up)); 
-    if(isKeyPressed(SDLK_a, true))
-        publish(PlayerMove(Dir.Left)); 
-    if(isKeyPressed(SDLK_d, true))
-        publish(PlayerMove(Dir.Right));
-
 	//Player actions
-	if(isKeyPressed(SDLK_p, true))
-		publish(PickUp());
+	if(player.valid){
+		//Player movement
+		if(isKeyPressed(SDLK_s, true))
+			publish(PlayerMove(Dir.Down)); 
+		if(isKeyPressed(SDLK_w, true))
+			publish(PlayerMove(Dir.Up)); 
+		if(isKeyPressed(SDLK_a, true))
+			publish(PlayerMove(Dir.Left)); 
+		if(isKeyPressed(SDLK_d, true))
+			publish(PlayerMove(Dir.Right));
+
+		//Player actions
+		if(isKeyPressed(SDLK_p, true))
+			publish(PickUp());
+	}
 }
 
 /*

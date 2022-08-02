@@ -30,9 +30,10 @@ struct TurnTick{}
 
 struct AttackEvent{
   import components : Attack;
+  Entity source, victim;
   Attack a;
-  this(Attack _a){
-    a = _a;
+  this(Entity srce, Entity vict, Attack _a){
+    source = srce; victim = vict; a = _a;
   }
   alias a this;
 }
