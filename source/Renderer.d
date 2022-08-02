@@ -125,8 +125,6 @@ void init(ref AppStartup s){
     if(curFont != null){
         writeln("----font loaded");
     }
-    texW = 0;
-    texH = 0;
 
     addLogMessage("Welcome to Cadlarog");
 }
@@ -142,14 +140,14 @@ void appShutdown(ref FinishStruct f){
 @EventSubscriber
 void loop(ref LoopStruct l){
 //    auto perf = Perf(null);
-    //Render the window
+//Render the window
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
+//Sprite rendering
     if(spriteDrawables.refresh()){
         spriteDrawables.entities.sort!"a.spriteRender.layer < b.spriteRender.layer";
     }
-    //writeln("xOffset: ", cameraXOffset);
     foreach(ent, ref transform, ref sprite; spriteDrawables){
         if(!sprite.enabled) continue;
         SDL_Rect rect = {
@@ -167,42 +165,19 @@ void loop(ref LoopStruct l){
     }
 
 //Text rendering
-    SDL_Surface*[] surfaces;
-    SDL_Texture*[] textures;
-    //int numMessages = 0;
-    for (int i = 0; i < messages.length; i++){
-        string curText = messages[i];
-        
-        SDL_Surface * surface = TTF_RenderText_Solid(curFont, curText.toStringz(), white);
-        surfaces ~= surface;
-        SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surface);
-        textures ~= texture;
-        SDL_QueryTexture(texture, null, null, &texW, &texH);
-        SDL_Rect dstrect = { 0, i*texH + 1, texW, texH };
-        SDL_RenderCopy(renderer, texture, null, &dstrect);
+    foreach(int i, ref mess; messages){
+        if(!mess.initialized){
+            SDL_Surface* surface = TTF_RenderText_Solid(curFont, mess.message.toStringz(), white);
+            mess.texture = SDL_CreateTextureFromSurface(renderer, surface);
+            SDL_QueryTexture(mess.texture, null, null, &mess.textWidth, &mess.textHeight);
+            mess.initialized = true;
+            SDL_FreeSurface(surface);
+        }
+        SDL_Rect dstrect = { 0, i*(mess.textHeight + 1), mess.textWidth, mess.textHeight };
+        SDL_RenderCopy(renderer, mess.texture, null, &dstrect);
+    }
 
-        SDL_RenderPresent(renderer);
-
-        //numMessages++;
-    }
-    foreach(SDL_Texture* tex ; textures){
-        SDL_DestroyTexture(tex);
-    }
-    foreach(SDL_Surface* surf; surfaces){
-        SDL_FreeSurface(surf);
-    }
-    //write("Printed ");
-    //write(numMessages);
-    //writeln(" messages this frame");
-}
-
-struct TextBox{
-    SDL_Surface * surface;
-	SDL_Texture * texture;
-    this(string text){
-        surface = TTF_RenderText_Solid(curFont, text.toStringz(), white);
-	    texture = SDL_CreateTextureFromSurface(renderer, surface);
-    }
+    SDL_RenderPresent(renderer);
 }
 
 @EventSubscriber
