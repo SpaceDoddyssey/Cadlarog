@@ -2,7 +2,8 @@ module systems;
 
 import ecsd;
 import components;
-import complex;
+import components.complex;
+import components.equipslots;
 import set;
 import events;
 import std.stdio;

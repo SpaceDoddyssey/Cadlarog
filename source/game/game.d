@@ -3,10 +3,11 @@ module game;
 import levelmap;
 import events;
 import components;
-import complex;
+import components.complex;
 import systems;
 import renderer;
 import playermodule;
+import components.ai;
 import entitycreation;
 import guiinfo;
 import randommodule;
@@ -53,37 +54,15 @@ void pickUp(ref PickUp p){
     }
     (ents[0]).remove!MapPos;
     (ents[0].get!SpriteRender()).enabled = false;
+    curTile.remove(ents[0]);
   }
 }
 
-@EventSubscriber
+/*@EventSubscriber
 void npcMove(ref NpcMove n){
   Entity ent = n.e;
-  MapPos* mp = ent.get!MapPos;
-  //Obviously this will change when there are other types of monsters
-  SlimeAI* Sai = ent.get!SlimeAI; 
-  int xDelta = 0, yDelta = 0;
-  if(Sai.curDir == Dir.Left){ xDelta = -1; }
-  if(Sai.curDir == Dir.Right){ xDelta = 1; }
-  if(Sai.curDir == Dir.Up){ yDelta = -1; }
-  if(Sai.curDir == Dir.Down){ yDelta = 1; }
-
-  Tile target = lm.getTile(mp.x + xDelta, mp.y + yDelta);
-  Entity[] blockingEnts = target.entsWith!(TileBlock)();
-  if(blockingEnts.length == 0){
-    if(target.type == TileType.Floor){
-      vec2i source = vec2i(mp.x, mp.y);
-      vec2i dest = vec2i(mp.x + xDelta, mp.y + yDelta);
-      lm.moveEntity(ent, source, dest);
-    } else {
-      Sai.turnAround();
-    }
-  } else if(blockingEnts[0] != player){
-    Sai.turnAround();
-  } else {
-    player.publish(AttackEvent(ent, player, (ent.get!PrimaryWeaponSlot).attack));
-  }
-}
+  ent.poubmove();
+}*/
 
 @EventSubscriber
 void playerMove(ref PlayerMove m){

@@ -1,4 +1,4 @@
-module complex;
+module components.complex;
 
 import dplug.math.vector;
 import ecsd;
@@ -114,81 +114,10 @@ struct Contents{
     }
 }
 
-struct PrimaryWeaponSlot{
-    Attack defaultAttack;
-    @ignore
-    Nullable!Entity equipped;
-    this(Attack d){
-        defaultAttack = d;
-    }
-    void equip(Entity w){
-        if(w.has!Weapon){
-            equipped = w;
-        } else { writeln("Can't equip that there!"); }
-    }
-    void unequip(){ equipped.nullify(); }
-    Attack attack(){
-        if(!equipped.isNull){
-            Weapon* wep = equipped.get.get!Weapon();
-            return wep.attack;
-        } else {
-            return defaultAttack;
-        }
-    }
-}
-
-struct ShieldSlot{
-    @ignore
-    Entity holder;
-    Nullable!Entity equipped;    
-    void onComponentAdded(Universe verse, EntityID id){
-        holder = Entity(id);
-    }
-    void equip(Entity ent){
-        if(ent.has!Shield){
-            equipped = ent;
-            (holder.get!HP()).damRed += (ent.get!Shield()).DR;
-        } else { writeln("Can't equip that there!"); }
-    }
-    void unequip(){ 
-        (holder.get!HP()).damRed -= (equipped.get.get!Shield()).DR; 
-        equipped.nullify(); 
-    }
-}
-
-struct SlimeAI{
-    Dir curDir;
-    @ignore
-    Entity ent;
-    void onComponentAdded(Universe verse, EntityID id){
-        ent = Entity(id);
-        curDir = cast(Dir)uniform(2, 4);
-        subscribe(&onTick);
-    }
-    void onTick(ref TurnTick t){
-        if(ent.valid){
-            publish(NpcMove(ent));
-        }
-    }
-    void turnAround(){
-        if(curDir == Dir.Up){
-            curDir = Dir.Down;
-        } else {
-            curDir = Dir.Up;
-        }
-    }
-}
-
-@EventSubscriber
-void registerComponents(ref UniverseAllocated ev)
+void registerComplexComponents(Universe verse)
 {
-    registerSimpleComponents(ev.universe);
-    ev.universe.registerBuiltinComponents;
-    ev.universe.registerComponent!SpriteRender;
-    ev.universe.registerComponent!HP;
-    ev.universe.registerComponent!Door;
-    ev.universe.registerComponent!Contents;
-    ev.universe.registerComponent!PrimaryWeaponSlot;
-    ev.universe.registerComponent!ShieldSlot;
-    ev.universe.registerComponent!SlimeAI;
+    verse.registerComponent!SpriteRender;
+    verse.registerComponent!HP;
+    verse.registerComponent!Door;
+    verse.registerComponent!Contents;
 }

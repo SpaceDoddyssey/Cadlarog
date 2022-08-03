@@ -1,12 +1,16 @@
 module entitycreation;
 
 import ecsd;
+import ecsd.events;
 import events;
 import renderer;
-import components;
-import complex;
 import playermodule;
 import guiinfo;
+
+import components;
+import components.complex;
+import components.ai;
+import components.equipslots;
 
 import dplug.math.vector;
 import bindbc.sdl;
@@ -97,4 +101,14 @@ void onEntityAttacked(ref EntityEvent!AttackEvent ev)
         string s = "You deal " ~ to!string(ev.a.damage) ~ " damage to the " ~ *(ev.victim.get!Name);
         addLogMessage(s);
     }
+}
+
+@EventSubscriber
+void registerComponents(ref UniverseAllocated ev)
+{
+    registerSimpleComponents(ev.universe);
+    registerEquipComponents(ev.universe);
+    registerAIComponents(ev.universe);
+    registerComplexComponents(ev.universe);
+    ev.universe.registerBuiltinComponents;
 }

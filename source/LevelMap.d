@@ -8,7 +8,7 @@ import renderer;
 import entitycreation;
 import perf;
 import components;
-import complex;
+import components.complex;
 import playermodule;
 import set;
 import randommodule;
