@@ -4,6 +4,7 @@ import ecsd;
 import events;
 import renderer;
 import components;
+import complex;
 import playermodule;
 import guiinfo;
 
@@ -13,7 +14,7 @@ import bindbc.sdl.image;
 import std.stdio;
 import std.conv;
 
-static Entity makeEntity(Universe verse, string s, int x, int y){
+static Entity makeEntity(Universe verse, string s, string s2, int x, int y){
     if(s == "Player"){
         MapPos* mp = player.get!MapPos;
         mp.position = vec2i(x, y);
@@ -37,8 +38,10 @@ static Entity makeEntity(Universe verse, string s, int x, int y){
         case("Crate"):{
             ent.add(SpriteRender("sprites/crate.png", vec2i(32, 32), SpriteLayer.Door)); 
             ent.add(TileBlock());
-            Contents* c = ent.add(Contents());
-            c.addContents(makeEntity(verse, "Sword", x, y));
+            if(s2 != null){
+                Contents* c = ent.add(Contents());
+                c.addContents(makeEntity(verse, s2, null, x, y));
+            }
             ent.add(HP(3));
             ent.add(AttackBait());
             break;
@@ -50,11 +53,19 @@ static Entity makeEntity(Universe verse, string s, int x, int y){
             ent.add(CanPickUp());
             break;
         }
+        case("Shield"):{
+            ent.add(SpriteRender("sprites/shield.png", vec2i(32, 32), SpriteLayer.Item));
+            ent.add(Wood());
+            ent.add(Shield(1));
+            ent.add(CanPickUp());
+            break;
+        }
         case("Slime"):{
             ent.add(SpriteRender("sprites/slime_purple.png", vec2i(32, 32), SpriteLayer.Character));
-            ent.add(HP(3));
+            ent.add(HP(5));
             ent.add(TileBlock());
             ent.add(SlimeAI());
+            ent.add(PrimaryWeaponSlot(Attack(2)));
             ent.add(AttackBait());
             break;
         }
@@ -74,6 +85,7 @@ static Entity makePlayer(Universe verse){
     ent.add(TileBlock());
     ent.add(HP(10));
     ent.add(PrimaryWeaponSlot(Attack(1)));
+    ent.add(ShieldSlot());
     player = ent;
     return ent;
 }

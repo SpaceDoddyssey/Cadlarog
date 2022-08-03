@@ -8,8 +8,10 @@ import renderer;
 import entitycreation;
 import perf;
 import components;
+import complex;
 import playermodule;
 import set;
+import randommodule;
 
 import dplug.math.vector;
 import std.stdio;
@@ -19,9 +21,6 @@ import std.random;
 import std.algorithm.searching;
 
 mixin registerSubscribers;
-
-//import std.file: writeBinary = write, readBinary = read;
-//import vibe.data.bson;
 
 LevelMap levelinit(Universe verse, int x, int y){ 
     writeln("level init");
@@ -57,8 +56,6 @@ class LevelMap{
         int levelNum;
         Universe verse;
         static float tileSize = 1.0f;
-        Random rand;
-        static int seed = 300;
         int maxWidth, maxHeight;
         int minRoomWidth = 5, minRoomHeight = 5;
         int maxRoomWidth = 8, maxRoomHeight = 8;
@@ -66,8 +63,6 @@ class LevelMap{
         Room[] rooms;
         this(Universe uni, int _x, int _y){
             verse = uni;
-            
-            rand = Random(seed);
 
             maxWidth = _x;
             maxHeight = _y;
@@ -80,12 +75,11 @@ class LevelMap{
                 while(!plumbLineToPath(r)){}
             }
             cullDeadEnds();
-            Room r = placeEntInRandomRoom("Player");
-            placeEntInRandomRoom("Crate");
-            for(int i = 0; i < 2; i++){
-                placeEntInRoom("Crate", r);
-            }
-            placeEntInRoom("Slime", r);
+            Room r = placeEntInRandomRoom("Player", null);
+            placeEntInRandomRoom("Crate", "Sword");
+            placeEntInRoom("Crate", "Sword", r);
+            placeEntInRoom("Crate", "Shield", r);
+            placeEntInRoom("Slime", null, r);
             texturePhase();
         }
     ref Tile getTile(int x, int y) { return tiles[y * maxWidth + x]; }
@@ -112,14 +106,14 @@ class LevelMap{
             Rect[] newPartitions;
             if(i % 2 == 0){
                 foreach(Rect space; partitions){
-                    newPartitions ~= (space.partitionVertical(rand));
+                    newPartitions ~= (space.partitionVertical());
                     for(int y = space.mins.y; y <= space.maxs.y; y++){
                         getTile(space.maxs.x+1,y).type = TileType.Floor;
                     }
                 }
             } else {
                 foreach(Rect space; partitions){
-                    newPartitions ~= (space.partitionHorizontal(rand));
+                    newPartitions ~= (space.partitionHorizontal());
                     for(int x = space.mins.x; x <= space.maxs.x; x++){
                         getTile(x,space.maxs.y+1).type = TileType.Floor;
                     }
@@ -143,12 +137,12 @@ class LevelMap{
             Rect space = partitions[nextIndex];
             int minX, minY;
             //writeln("-----\n mins.x:",space.mins.x,"  mins.y:",space.mins.y,        "\n max.x:",space.maxs.x," max.y:",space.maxs.y,        "\n minRoomWidth:",minRoomWidth," minRoomHeight:",minRoomHeight,);
-            if(space.mins.x == space.maxs.x - minRoomWidth){
+            if(space.mins.x >= space.maxs.x - minRoomWidth){
                 minX = cast(int)space.mins.x;
             } else {
                 minX = cast(int)uniform(space.mins.x, space.maxs.x - minRoomWidth, rand);
             }           
-            if(space.mins.y == space.maxs.y - minRoomHeight){
+            if(space.mins.y >= space.maxs.y - minRoomHeight){
                 minY = cast(int)space.mins.x;
             } else {
                 minY = cast(int)uniform(space.mins.y, space.maxs.y - minRoomHeight, rand);
@@ -156,13 +150,13 @@ class LevelMap{
             vec2i botLeft = vec2i(minX, minY);
 
             int topX, topY;
-            if(minX + minRoomWidth == space.maxs.x){
-                topX = minX + minRoomWidth;
+            if(minX + minRoomWidth >= space.maxs.x){
+                topX = space.maxs.x;
             } else {
                 topX = cast(int)uniform(minX + minRoomWidth, space.maxs.x, rand);
             }
-            if(minY + minRoomHeight == space.maxs.y){
-                topY = minY + minRoomHeight;
+            if(minY + minRoomHeight >= space.maxs.y){
+                topY = space.maxs.y;
             } else {
                 topY = cast(int)uniform(minY + minRoomHeight, space.maxs.y, rand);
             }
@@ -235,7 +229,7 @@ class LevelMap{
         }
 
         //now place a door there
-        Entity door = makeEntity(verse, "Door", xPos, yPos);
+        Entity door = makeEntity(verse, "Door", null, xPos, yPos);
         getTile(xPos, yPos).add(door);
 
         return true;
@@ -274,12 +268,12 @@ class LevelMap{
             }
         }
     }
-    private Room placeEntInRandomRoom(string s){
+    private Room placeEntInRandomRoom(string s, string s2){
         int whichRoom = cast(int)uniform(0, rooms.length, rand);
         Room r = rooms[whichRoom];
         int entX = cast(int)uniform(r.rect.mins.x+1, r.rect.maxs.x, rand);
         int entY = cast(int)uniform(r.rect.mins.y+1, r.rect.maxs.y, rand);
-        Entity pEnt = makeEntity(verse, s, entX, entY);
+        Entity pEnt = makeEntity(verse, s, s2, entX, entY);
         writeln("Spawning entity at ", entX, " ", entY );
         getTile(entX, entY).add(pEnt);
         if(s == "Player"){
@@ -290,10 +284,10 @@ class LevelMap{
         //Expand -------------------------------
         //Make sure this doesn't place an object on a tile that's already full
     }
-    private void placeEntInRoom(string s, Room r){
+    private void placeEntInRoom(string s, string s2, Room r){
         int entX = cast(int)uniform(r.rect.mins.x+1, r.rect.maxs.x, rand);
         int entY = cast(int)uniform(r.rect.mins.y+1, r.rect.maxs.y, rand);
-        Entity pEnt = makeEntity(verse, s, entX, entY);
+        Entity pEnt = makeEntity(verse, s, s2, entX, entY);
         writeln("Spawning entity at ", entX, " ", entY );
         getTile(entX, entY).add(pEnt);
     }
@@ -309,7 +303,7 @@ auto perf = Perf(null);
                 default:
                     target = "sprites/Empty.png"; break;
             }
-            t.tileEnt = makeEntity(verse, "Tile", t.pos.position.x, t.pos.position.y);
+            t.tileEnt = makeEntity(verse, "Tile", null, t.pos.position.x, t.pos.position.y);
             t.tileEnt.add(SpriteRender(target, vec2i(32, 32), SpriteLayer.Floor));
         }
     }
@@ -385,7 +379,7 @@ public class Rect
         return (maxs.y - mins.y);
     }
     //Cuts the rectangle in half with a one-block-thick vertical slice, making this Rect the left-hand rectangle and returning the right-hand rectangle
-    public Rect partitionVertical(Random rand){    
+    public Rect partitionVertical(){    
         int divisionPoint = uniform(mins.x + width()/3, maxs.x - width()/3, rand);
         
         vec2i firstTop = vec2i(divisionPoint - 1, maxs.y);
@@ -398,7 +392,7 @@ public class Rect
         return right;
     }
     //Cuts the rectangle in half with a one-block-thick horizontal slice, making this Rect the bottom rectangle and returning the top rectangle
-    public Rect partitionHorizontal(Random rand){    
+    public Rect partitionHorizontal(){    
         int divisionPoint = uniform(mins.y + height()/3, maxs.y - height()/3, rand);
 
         vec2i firstTop = vec2i(maxs.x, divisionPoint - 1);

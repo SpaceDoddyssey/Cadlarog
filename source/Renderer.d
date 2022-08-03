@@ -122,11 +122,7 @@ void init(ref AppStartup s){
     //Initialize text rendering
     TTF_Init();
     curFont = TTF_OpenFont(fontPath.toStringz(), fontSize);
-    if(curFont != null){
-        writeln("----font loaded");
-    }
-
-    addLogMessage("Welcome to Cadlarog");
+    //if(curFont != null){ writeln("font loaded"); }
 }
 
 @EventSubscriber
@@ -167,13 +163,13 @@ void loop(ref LoopStruct l){
 //Text rendering
     foreach(int i, ref mess; messages){
         if(!mess.initialized){
-            SDL_Surface* surface = TTF_RenderText_Solid(curFont, mess.message.toStringz(), white);
+            SDL_Surface* surface = TTF_RenderText_Shaded(curFont, mess.message.toStringz(), white, black);
             mess.texture = SDL_CreateTextureFromSurface(renderer, surface);
             SDL_QueryTexture(mess.texture, null, null, &mess.textWidth, &mess.textHeight);
             mess.initialized = true;
             SDL_FreeSurface(surface);
         }
-        SDL_Rect dstrect = { 0, i*(mess.textHeight + 1), mess.textWidth, mess.textHeight };
+        SDL_Rect dstrect = { 4, 4 + i*(mess.textHeight + 1), mess.textWidth, mess.textHeight };
         SDL_RenderCopy(renderer, mess.texture, null, &dstrect);
     }
 

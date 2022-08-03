@@ -1,21 +1,26 @@
-module components;
+module complex;
+
 import dplug.math.vector;
 import ecsd;
+import ecsd.events;
 import std.stdio;
 import std.typecons;
 import std.random;
 import std.conv;
+import vibe.data.serialization;
+
+mixin registerSubscribers;
 
 import renderer;
 import events;
 import guiinfo;
 import playermodule;
-
-struct Name{ string name; alias name this; }
+import components;
 
 struct HP{
     int curHP, maxHP, damRed = 0;
-    Entity ent = void;
+    @ignore
+    Entity ent;
     this(int h){
         curHP = maxHP = h;
     }
@@ -38,11 +43,13 @@ struct HP{
         //Note: maybe should handle death better 
     }
     void receiveAttack(Entity e, ref AttackEvent atEv){
+        int damageDone = atEv.a.damage - damRed;
+        if(damageDone < 0) { damageDone = 0; }
         if(atEv.source == player){
-            string s = "You deal " ~ to!string(atEv.a.damage) ~ " damage to the " ~ *(atEv.victim.get!Name);
+            string s = "You deal " ~ to!string(damageDone) ~ " damage to the " ~ *(atEv.victim.get!Name);
             addLogMessage(s);
         } else if (atEv.victim == player){
-            string s = "The " ~ *(atEv.source.get!Name) ~ " deals " ~ to!string(atEv.a.damage) ~ " damage to you!";
+            string s = "The " ~ *(atEv.source.get!Name) ~ " deals " ~ to!string(damageDone) ~ " damage to you!";
             addLogMessage(s);
         }
         int d = atEv.damage;
@@ -53,7 +60,8 @@ struct HP{
 struct Door{
     bool isOpen;
     string openSprite, closedSprite;
-    Entity ent = void;
+    @ignore
+    Entity ent;
     void onComponentAdded(Universe verse, EntityID id){
         ent = Entity(id);
         (ent.get!PubSub).subscribe(&doorOpen);
@@ -78,7 +86,8 @@ struct Door{
 struct Contents{
     Entity[] contents;
     alias contents this;
-    Entity ent = void;
+    @ignore
+    Entity ent;
 
     void onComponentAdded(Universe verse, EntityID id){
         ent = Entity(id);
@@ -100,23 +109,14 @@ struct Contents{
             vec2i pos = thisPos.position;
             cont.add(MapPos(pos));
             publish(PlaceEntity(cont, pos));
-            addLogMessage("The crate dropped a sword!");
+            addLogMessage("The crate dropped a " ~ *(cont.get!Name()) ~ "!");
         }
     }
 }
 
-struct Transform{ vec2i position; alias position this; }
-struct MapPos{ vec2i position; alias position this; }
-struct AttackBait{}
-struct TileBlock{}
-struct Wood{}
-struct Metal{}
-struct CanPickUp{}
-
-struct Stairs{}
-
 struct PrimaryWeaponSlot{
     Attack defaultAttack;
+    @ignore
     Nullable!Entity equipped;
     this(Attack d){
         defaultAttack = d;
@@ -137,21 +137,32 @@ struct PrimaryWeaponSlot{
     }
 }
 
-struct Weapon{
-    Attack attack;
-}
-
-struct Attack{
-    int damage;
+struct ShieldSlot{
+    @ignore
+    Entity holder;
+    Nullable!Entity equipped;    
+    void onComponentAdded(Universe verse, EntityID id){
+        holder = Entity(id);
+    }
+    void equip(Entity ent){
+        if(ent.has!Shield){
+            equipped = ent;
+            (holder.get!HP()).damRed += (ent.get!Shield()).DR;
+        } else { writeln("Can't equip that there!"); }
+    }
+    void unequip(){ 
+        (holder.get!HP()).damRed -= (equipped.get.get!Shield()).DR; 
+        equipped.nullify(); 
+    }
 }
 
 struct SlimeAI{
     Dir curDir;
-    Entity ent = void;
+    @ignore
+    Entity ent;
     void onComponentAdded(Universe verse, EntityID id){
         ent = Entity(id);
         curDir = cast(Dir)uniform(2, 4);
-writeln("direction generated = ", cast(int)curDir);
         subscribe(&onTick);
     }
     void onTick(ref TurnTick t){
@@ -168,29 +179,16 @@ writeln("direction generated = ", cast(int)curDir);
     }
 }
 
-static void registration(Universe verse){
-    verse.registerBuiltinComponents;
-    verse.registerComponent!Transform;
-    verse.registerComponent!SpriteRender;
-    verse.registerComponent!Name;
-    verse.registerComponent!HP;
-    verse.registerComponent!MapPos;
-    verse.registerComponent!Door;
-    verse.registerComponent!Wood;
-    verse.registerComponent!Metal;
-    verse.registerComponent!Contents;
-    verse.registerComponent!TileBlock;
-    verse.registerComponent!AttackBait;
-    verse.registerComponent!Weapon;
-    verse.registerComponent!Attack;
-    verse.registerComponent!CanPickUp;
-    verse.registerComponent!PrimaryWeaponSlot;
-    verse.registerComponent!SlimeAI;
-    verse.registerComponent!Stairs;
+@EventSubscriber
+void registerComponents(ref UniverseAllocated ev)
+{
+    registerSimpleComponents(ev.universe);
+    ev.universe.registerBuiltinComponents;
+    ev.universe.registerComponent!SpriteRender;
+    ev.universe.registerComponent!HP;
+    ev.universe.registerComponent!Door;
+    ev.universe.registerComponent!Contents;
+    ev.universe.registerComponent!PrimaryWeaponSlot;
+    ev.universe.registerComponent!ShieldSlot;
+    ev.universe.registerComponent!SlimeAI;
 }
-
-/*
-    void onComponentAdded(Universe, EntityID)
-    {
-        damage = uniform(5, 25);
-    }*/

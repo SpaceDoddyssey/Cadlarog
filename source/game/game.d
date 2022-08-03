@@ -3,12 +3,16 @@ module game;
 import levelmap;
 import events;
 import components;
+import complex;
 import systems;
 import renderer;
 import playermodule;
 import entitycreation;
+import guiinfo;
+import randommodule;
 
 import std.stdio;
+import std.random;
 import ecsd;
 import ecsd.userdata;
 import dplug.math.vector;
@@ -19,13 +23,16 @@ Universe uni;
 
 @EventSubscriber
 void init(ref AppStartup s){
+  rand = Random(seed);
+
   uni = allocUniverse();
-  registration(uni);
 
   player = makePlayer(uni);
   lm = levelinit(uni, 50, 50);
   
   setUserdata!LevelMap(uni, lm);
+
+  addLogMessage("Welcome to Cadlarog");
 }
 
 @EventSubscriber
@@ -35,10 +42,17 @@ void pickUp(ref PickUp p){
   Entity[] ents = curTile.entsWith!CanPickUp;
   if(ents.length > 0){
     //Obviously change this when there's more than just swords to pick up
-    PrimaryWeaponSlot* pWSlot = player.get!PrimaryWeaponSlot;
+    if(ents[0].has!Weapon){
+      PrimaryWeaponSlot* pWSlot = player.get!PrimaryWeaponSlot;
+      pWSlot.equip(ents[0]);
+    } else if (ents[0].has!Shield){
+      ShieldSlot* sSlot = player.get!ShieldSlot;
+      sSlot.equip(ents[0]);
+    } else {
+      return;
+    }
     (ents[0]).remove!MapPos;
     (ents[0].get!SpriteRender()).enabled = false;
-    pWSlot.equip(ents[0]);
   }
 }
 
@@ -67,7 +81,7 @@ void npcMove(ref NpcMove n){
   } else if(blockingEnts[0] != player){
     Sai.turnAround();
   } else {
-    player.publish(AttackEvent(ent, player, (player.get!PrimaryWeaponSlot).attack));
+    player.publish(AttackEvent(ent, player, (ent.get!PrimaryWeaponSlot).attack));
   }
 }
 
