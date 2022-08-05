@@ -1,9 +1,21 @@
 module app;
 
-import ecsd;
 import events;
+import app;
+import ecsd;
+import ecsd.events;
+import ecsd.userdata;
+import game;
 import renderer;
+import entitycreation;
 import perf;
+import input;
+import components;
+import components.complex;
+import playermodule;
+import set;
+import randommodule;
+import levelmap;
 
 import std;
 import std.experimental.logger;
@@ -17,7 +29,9 @@ void main()
     debug sharedLog.logLevel = LogLevel.all;
     else sharedLog.logLevel = LogLevel.info;
 
-writeln("App starting");
+    subscribeFunctions();
+
+    writeln("App starting");
     init();
 /*    import std: array, sort, each;
 scope(exit) Perf
@@ -26,6 +40,34 @@ scope(exit) Perf
     .array
     .sort!"a.value > b.value"
     .each!(p => writeln(p.key, " => ", p.value));*/
+}
+
+void subscribeFunctions(){
+    writeln("Subscribing functions");
+    subscribe(&placeEntity);
+writeln(__LINE__);
+    subscribe(&gameInit);
+writeln(__LINE__);
+    subscribe(&rendererInit);
+writeln(__LINE__);
+    subscribe(&appShutdown);
+writeln(__LINE__);
+    subscribe(&renderLoop);
+writeln(__LINE__);
+    subscribe(&cameraMove);
+writeln(__LINE__);
+    subscribe(&onEntityAttacked);
+writeln(__LINE__);
+    subscribe(&registerComponents);
+writeln(__LINE__);
+    subscribe(&pickUp);
+writeln(__LINE__);
+    subscribe(&playerMove);
+writeln(__LINE__);
+    subscribe(&processEvent);
+writeln(__LINE__);
+    subscribe(&controlHandling);
+writeln(__LINE__);
 }
 
 void init(){

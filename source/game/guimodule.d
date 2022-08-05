@@ -17,6 +17,8 @@ int numMessagesToRender = 7;
 
 SDL_Color white = { 0xFF, 0xFF, 0xFF, 0 };
 SDL_Color black = { 0x00, 0x00, 0x00, 0 };
+SDL_Color red   = { 0xFF, 0x00, 0x00, 0 };
+SDL_Color green = { 0x00, 0xFF, 0x00, 0 };
 
 void addLogMessage(string mess){
     messages ~= TextBox(mess);

@@ -4,6 +4,7 @@ import levelmap;
 import events;
 import components;
 import components.complex;
+import components.equipslots;
 import systems;
 import renderer;
 import playermodule;
@@ -17,26 +18,21 @@ import std.random;
 import ecsd;
 import ecsd.userdata;
 import dplug.math.vector;
-mixin registerSubscribers;
 
 LevelMap lm;
 Universe uni;
 
-@EventSubscriber
-void init(ref AppStartup s){
+void gameInit(ref AppStartup s){
   rand = Random(seed);
 
   uni = allocUniverse();
-
   player = makePlayer(uni);
   lm = levelinit(uni, 50, 50);
-  
   setUserdata!LevelMap(uni, lm);
 
   addLogMessage("Welcome to Cadlarog");
 }
 
-@EventSubscriber
 void pickUp(ref PickUp p){
   MapPos* pPos = player.get!MapPos;
   Tile curTile = lm.getTile(pPos.x, pPos.y);
@@ -58,13 +54,12 @@ void pickUp(ref PickUp p){
   }
 }
 
-/*@EventSubscriber
+/*
 void npcMove(ref NpcMove n){
   Entity ent = n.e;
   ent.poubmove();
 }*/
 
-@EventSubscriber
 void playerMove(ref PlayerMove m){
   int xDelta = 0, yDelta = 0;
   if(m.dir == Dir.Left){ xDelta = -1; }

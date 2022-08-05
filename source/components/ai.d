@@ -18,6 +18,7 @@ struct SlimeAI{
     Dir curDir;
     @ignore
     Entity ent;
+    @ignore
     LevelMap lm;
     MapPos* mp;
     void onComponentAdded(Universe verse, EntityID id){

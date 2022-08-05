@@ -14,8 +14,6 @@ import bindbc.sdl.image;
 import bindbc.sdl.ttf;
 import std.stdio;
 
-mixin registerSubscribers;
-
 SDL_Window* window;
 SDL_Renderer* renderer;
 float cameraXOffset; 
@@ -52,8 +50,7 @@ struct SpriteRender{
         }
 }
 
-@EventSubscriber
-void init(ref AppStartup s){ 
+void rendererInit(ref AppStartup s){ 
     //Load general SDL library
     SDLSupport sdlVer;
     version(Win32)
@@ -101,6 +98,8 @@ void init(ref AppStartup s){
     if(SDL_Init(SDL_INIT_EVENTS | SDL_INIT_VIDEO) != 0)
         fatalf("failed to initialize SDL: %s", SDL_GetError().fromStringz);
 
+    IMG_Init(IMG_INIT_PNG);
+
     enum vpWidth = 1280;
     enum vpHeight = 720;
 
@@ -125,7 +124,6 @@ void init(ref AppStartup s){
     //if(curFont != null){ writeln("font loaded"); }
 }
 
-@EventSubscriber
 void appShutdown(ref FinishStruct f){
     TTF_CloseFont(curFont);
     TTF_Quit();
@@ -133,8 +131,7 @@ void appShutdown(ref FinishStruct f){
     SDL_DestroyWindow(window);
 }
 
-@EventSubscriber
-void loop(ref LoopStruct l){
+void renderLoop(ref LoopStruct l){
 //    auto perf = Perf(null);
 //Render the window
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -176,7 +173,6 @@ void loop(ref LoopStruct l){
     SDL_RenderPresent(renderer);
 }
 
-@EventSubscriber
 void cameraMove(ref CameraMove m){
   import renderer: cameraXOffset, cameraYOffset;
   switch(m.dir){

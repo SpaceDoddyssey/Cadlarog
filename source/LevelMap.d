@@ -20,8 +20,6 @@ import bindbc.sdl.image;
 import std.random;
 import std.algorithm.searching;
 
-mixin registerSubscribers;
-
 LevelMap levelinit(Universe verse, int x, int y){ 
     writeln("level init");
     LevelMap lm = new LevelMap(verse, x, y);
@@ -35,7 +33,6 @@ LevelMap getMapForUniverse(Universe uni)
     return levelMaps[uni];
 }
 
-@EventSubscriber
 void placeEntity(ref PlaceEntity p)
 {
     Entity ent = p.e;

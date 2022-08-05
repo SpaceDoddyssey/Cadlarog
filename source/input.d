@@ -8,9 +8,6 @@ import bindbc.sdl;
 import dplug.math.vector;
 
 import std.stdio;
-mixin registerSubscribers;
-
-private:
 
 bool[SDL_NUM_SCANCODES] keyboardState;
 bool[6] buttonState; // no _NUM_ enum :(
@@ -35,7 +32,6 @@ vec2i getMousePos()
 	return mousePos;
 }
 
-@EventSubscriber
 void processEvent(ref SDLEvent ev)
 {
 	switch(ev.type)
@@ -56,7 +52,6 @@ void processEvent(ref SDLEvent ev)
 	}
 }
 
-@EventSubscriber
 void controlHandling(ref LoopStruct l){
 	//Escape key exit handled in app.d
 

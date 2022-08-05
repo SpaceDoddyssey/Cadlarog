@@ -40,17 +40,23 @@ struct ShieldSlot{
     void equip(Entity ent){
         if(ent.has!Shield){
             equipped = ent;
-            (holder.get!HP()).damRed += (ent.get!Shield()).DR;
+            holder.get!DR().dr += (ent.get!Shield()).DR;
         } else { writeln("Can't equip that there!"); }
     }
     void unequip(){ 
-        (holder.get!HP()).damRed -= (equipped.get.get!Shield()).DR; 
+        holder.get!DR().dr -= (equipped.get.get!Shield()).DR; 
         equipped.nullify(); 
     }
+}
+
+struct DR{
+    int dr;
+    alias dr this;
 }
 
 void registerEquipComponents(Universe verse)
 {
     verse.registerComponent!PrimaryWeaponSlot;
     verse.registerComponent!ShieldSlot;
+    verse.registerComponent!DR;
 }

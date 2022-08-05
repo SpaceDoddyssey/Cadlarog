@@ -90,11 +90,11 @@ static Entity makePlayer(Universe verse){
     ent.add(HP(10));
     ent.add(PrimaryWeaponSlot(Attack(1)));
     ent.add(ShieldSlot());
+    ent.add(DR());
     player = ent;
     return ent;
 }
 
-@EventSubscriber
 void onEntityAttacked(ref EntityEvent!AttackEvent ev)
 {
     if(ev.source == player){
@@ -103,7 +103,6 @@ void onEntityAttacked(ref EntityEvent!AttackEvent ev)
     }
 }
 
-@EventSubscriber
 void registerComponents(ref UniverseAllocated ev)
 {
     registerSimpleComponents(ev.universe);
