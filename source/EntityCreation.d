@@ -31,7 +31,7 @@ static Entity makeEntity(Universe verse, string s, string s2, int x, int y){
     ent.add(PubSub());
     ent.add(MapPos(vec2i(x, y)));
     switch(s){
-        case("Door"):{
+        case("door"):{
             ent.add(SpriteRender("sprites/door_closed.png", vec2i(32, 32), SpriteLayer.Door));
             ent.add(Door(false, "sprites/door_open.png", "sprites/door_closed.png"));
             ent.add(TileBlock());
@@ -39,7 +39,7 @@ static Entity makeEntity(Universe verse, string s, string s2, int x, int y){
             ent.add(Name(s));
             break;
         }
-        case("Crate"):{
+        case("crate"):{
             ent.add(SpriteRender("sprites/crate.png", vec2i(32, 32), SpriteLayer.Door)); 
             ent.add(TileBlock());
             if(s2 != null){
@@ -51,7 +51,7 @@ static Entity makeEntity(Universe verse, string s, string s2, int x, int y){
             ent.add(Name(s));
             break;
         }
-        case("Sword"):{
+        case("sword"):{
             ent.add(SpriteRender("sprites/claymore.png", vec2i(32, 32), SpriteLayer.Item));
             ent.add(Metal());
             ent.add(Weapon(Attack(3)));
@@ -59,7 +59,7 @@ static Entity makeEntity(Universe verse, string s, string s2, int x, int y){
             ent.add(Name(s));
             break;
         }
-        case("Shield"):{
+        case("shield"):{
             ent.add(SpriteRender("sprites/shield.png", vec2i(32, 32), SpriteLayer.Item));
             ent.add(Wood());
             ent.add(Shield(1));
@@ -67,24 +67,24 @@ static Entity makeEntity(Universe verse, string s, string s2, int x, int y){
             ent.add(Name(s));
             break;
         }
-        case("Slime_purple"):{
+        case("slime_purple"):{
             ent.add(SpriteRender("sprites/slime_purple.png", vec2i(32, 32), SpriteLayer.Character));
             ent.add(HP(6));
             ent.add(TileBlock());
             ent.add(AISlimePurple());
             ent.add(PrimaryWeaponSlot(Attack(2)));
             ent.add(AttackBait());
-            ent.add(Name("Slime"));
+            ent.add(Name("purple slime"));
             break;
         }
-        case("Slime_green"):{
+        case("slime_green"):{
             ent.add(SpriteRender("sprites/slime_green.png", vec2i(32, 32), SpriteLayer.Character));
             ent.add(HP(5));
             ent.add(TileBlock());
             ent.add(AISlimeGreen());
             ent.add(PrimaryWeaponSlot(Attack(2)));
             ent.add(AttackBait());
-            ent.add(Name("Slime"));
+            ent.add(Name("green slime"));
             break;
         }
         default:

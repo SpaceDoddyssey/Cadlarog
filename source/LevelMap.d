@@ -90,10 +90,11 @@ class LevelMap{
     }
     void populate(){
         Room r = placeEntInRandomRoom("Player", null);
-        placeEntInRandomRoom("Crate", "Sword");
-        placeEntInRoom("Crate", "Sword", r);
-        placeEntInRoom("Crate", "Shield", r);
-        placeEntInRoom("Slime_purple", null, r);
+        placeEntInRandomRoom("crate", "sword");
+        placeEntInRoom("crate", "sword", r);
+        placeEntInRoom("crate", "shield", r);
+        placeEntInRoom("slime_purple", null, r);
+        placeEntInRoom("slime_green", null, r);
     }
     private Rect[] partitionPhase(int numPartitions){
         Rect[] partitions;
@@ -229,7 +230,7 @@ class LevelMap{
         }
 
         //now place a door there
-        Entity door = makeEntity(verse, "Door", null, xPos, yPos);
+        Entity door = makeEntity(verse, "door", null, xPos, yPos);
         getTile(xPos, yPos).add(door);
 
         return true;

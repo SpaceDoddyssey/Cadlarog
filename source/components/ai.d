@@ -5,6 +5,7 @@ import components.equipslots;
 import levelmap;
 import playermodule;
 import events;
+import randommodule;
 
 import std.stdio;
 import ecsd;
@@ -66,6 +67,39 @@ struct AISlimePurple{
 }
 
 struct AISlimeGreen{
+    @ignore
+    Entity ent;
+    @ignore
+    LevelMap lm;
+    MapPos* mp;
+    void onComponentAdded(Universe verse, EntityID id){
+        ent = Entity(id);
+        lm = ent.universe.getUserdata!LevelMap;
+        mp = ent.get!MapPos;
+        subscribe(&onTick);
+    }
+    void onComponentRemoved(Universe verse, EntityID id){
+        unsubscribe(&onTick);
+    }
+    void onTick(ref TurnTick t){
+        int xDelta = 0, yDelta = 0;
+        while(xDelta == 0 && yDelta == 0){
+            xDelta = uniform(-1, 2, rand);
+            yDelta = uniform(-1, 2, rand);
+        }
+
+        Tile target = lm.getTile(mp.x + xDelta, mp.y + yDelta);
+        Entity[] blockingEnts = target.entsWith!(TileBlock)();
+        if(blockingEnts.length == 0){
+            if(target.type == TileType.Floor){
+                vec2i source = vec2i(mp.x, mp.y);
+                vec2i dest = vec2i(mp.x + xDelta, mp.y + yDelta);
+                lm.moveEntity(ent, source, dest);
+            }
+        } else if(blockingEnts[0] == player){
+            player.get!PubSub.publish(AttackEvent(ent, player, (ent.get!PrimaryWeaponSlot).attack));
+        }
+    }
 }
 
 void registerAIComponents(Universe verse){
