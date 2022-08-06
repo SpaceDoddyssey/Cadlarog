@@ -98,7 +98,8 @@ void rendererInit(ref AppStartup s){
     if(SDL_Init(SDL_INIT_EVENTS | SDL_INIT_VIDEO) != 0)
         fatalf("failed to initialize SDL: %s", SDL_GetError().fromStringz);
 
-    IMG_Init(IMG_INIT_PNG);
+    if(IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG)
+        fatalf("failed to initialize SDL_Image: %s", SDL_GetError().fromStringz);
 
     enum vpWidth = 1280;
     enum vpHeight = 720;
@@ -119,7 +120,9 @@ void rendererInit(ref AppStartup s){
     if(renderer is null) fatalf("failed to create renderer: %s", SDL_GetError().fromStringz);
 
     //Initialize text rendering
-    TTF_Init();
+    if(TTF_Init() != 0)
+        fatalf("failed to initialize SDL_TTF: %s", SDL_GetError().fromStringz);
+
     curFont = TTF_OpenFont(fontPath.toStringz(), fontSize);
     //if(curFont != null){ writeln("font loaded"); }
 }
@@ -201,8 +204,8 @@ SDL_Texture* loadTextureFromImage(string path)
     auto perf = Perf(null);
     import std.string: toStringz; // D's string type to char*
 
-    auto surface = IMG_Load(path.toStringz);
-    if(surface is null) fatal("Could not load texture at ", path);
-    scope(exit) SDL_FreeSurface(surface);
+    auto surface = IMG_Load(path.toStringz());
+    if(surface is null) fatalf(
+"Could not load texture at %s (SDL error: `%s`)", path, SDL_GetError().fromStringz);    scope(exit) SDL_FreeSurface(surface);
     return SDL_CreateTextureFromSurface(renderer, surface);
 }

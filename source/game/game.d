@@ -27,8 +27,7 @@ void gameInit(ref AppStartup s){
 
   uni = allocUniverse();
   player = makePlayer(uni);
-  lm = levelinit(uni, 50, 50);
-  setUserdata!LevelMap(uni, lm);
+  levelinit(uni, &lm, 50, 50);
 
   addLogMessage("Welcome to Cadlarog");
 }
@@ -53,12 +52,6 @@ void pickUp(ref PickUp p){
     curTile.remove(ents[0]);
   }
 }
-
-/*
-void npcMove(ref NpcMove n){
-  Entity ent = n.e;
-  ent.poubmove();
-}*/
 
 void playerMove(ref PlayerMove m){
   int xDelta = 0, yDelta = 0;

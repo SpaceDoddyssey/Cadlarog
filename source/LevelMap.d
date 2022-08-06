@@ -11,6 +11,7 @@ import components;
 import components.complex;
 import playermodule;
 import set;
+import game;
 import randommodule;
 
 import dplug.math.vector;
@@ -20,21 +21,20 @@ import bindbc.sdl.image;
 import std.random;
 import std.algorithm.searching;
 
-LevelMap levelinit(Universe verse, int x, int y){ 
+LevelMap levelinit(Universe verse, void* lmPointer, int x, int y){ 
     writeln("level init");
-    LevelMap lm = new LevelMap(verse, x, y);
+    lm = new LevelMap(verse, x, y);
+    lm.populate();
     spriteDrawables = new typeof(spriteDrawables)(lm.verse);
     return lm;
 }
 
 private LevelMap[Universe] levelMaps;
-LevelMap getMapForUniverse(Universe uni)
-{
+LevelMap getMapForUniverse(Universe uni){
     return levelMaps[uni];
 }
 
-void placeEntity(ref PlaceEntity p)
-{
+void placeEntity(ref PlaceEntity p){
     Entity ent = p.e;
     vec2i tilePos = p.v;
     auto level = ent.universe.getUserdata!LevelMap;
@@ -60,6 +60,7 @@ class LevelMap{
         Room[] rooms;
         this(Universe uni, int _x, int _y){
             verse = uni;
+            setUserdata!LevelMap(verse, this);
 
             maxWidth = _x;
             maxHeight = _y;
@@ -72,11 +73,6 @@ class LevelMap{
                 while(!plumbLineToPath(r)){}
             }
             cullDeadEnds();
-            Room r = placeEntInRandomRoom("Player", null);
-            placeEntInRandomRoom("Crate", "Sword");
-            placeEntInRoom("Crate", "Sword", r);
-            placeEntInRoom("Crate", "Shield", r);
-            placeEntInRoom("Slime", null, r);
             texturePhase();
         }
     ref Tile getTile(int x, int y) { return tiles[y * maxWidth + x]; }
@@ -91,6 +87,13 @@ class LevelMap{
                 getTile(x,y) = T;
             }
         }
+    }
+    void populate(){
+        Room r = placeEntInRandomRoom("Player", null);
+        placeEntInRandomRoom("Crate", "Sword");
+        placeEntInRoom("Crate", "Sword", r);
+        placeEntInRoom("Crate", "Shield", r);
+        placeEntInRoom("Slime_purple", null, r);
     }
     private Rect[] partitionPhase(int numPartitions){
         Rect[] partitions;

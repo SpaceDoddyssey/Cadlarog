@@ -45,29 +45,17 @@ scope(exit) Perf
 void subscribeFunctions(){
     writeln("Subscribing functions");
     subscribe(&placeEntity);
-writeln(__LINE__);
     subscribe(&gameInit);
-writeln(__LINE__);
-    subscribe(&rendererInit);
-writeln(__LINE__);
+    subscribe(&rendererInit, int.max >> 1);
     subscribe(&appShutdown);
-writeln(__LINE__);
     subscribe(&renderLoop);
-writeln(__LINE__);
     subscribe(&cameraMove);
-writeln(__LINE__);
-    subscribe(&onEntityAttacked);
-writeln(__LINE__);
+    //subscribe(&onEntityAttacked);
     subscribe(&registerComponents);
-writeln(__LINE__);
     subscribe(&pickUp);
-writeln(__LINE__);
     subscribe(&playerMove);
-writeln(__LINE__);
     subscribe(&processEvent);
-writeln(__LINE__);
     subscribe(&controlHandling);
-writeln(__LINE__);
 }
 
 void init(){

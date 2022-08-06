@@ -30,13 +30,13 @@ static Entity makeEntity(Universe verse, string s, string s2, int x, int y){
     ent.add(Transform(vec2i(x*32, y*32)));
     ent.add(PubSub());
     ent.add(MapPos(vec2i(x, y)));
-    ent.add(Name(s));
     switch(s){
         case("Door"):{
             ent.add(SpriteRender("sprites/door_closed.png", vec2i(32, 32), SpriteLayer.Door));
             ent.add(Door(false, "sprites/door_open.png", "sprites/door_closed.png"));
             ent.add(TileBlock());
             ent.add(Wood());
+            ent.add(Name(s));
             break;
         }
         case("Crate"):{
@@ -48,6 +48,7 @@ static Entity makeEntity(Universe verse, string s, string s2, int x, int y){
             }
             ent.add(HP(3));
             ent.add(AttackBait());
+            ent.add(Name(s));
             break;
         }
         case("Sword"):{
@@ -55,6 +56,7 @@ static Entity makeEntity(Universe verse, string s, string s2, int x, int y){
             ent.add(Metal());
             ent.add(Weapon(Attack(3)));
             ent.add(CanPickUp());
+            ent.add(Name(s));
             break;
         }
         case("Shield"):{
@@ -62,15 +64,27 @@ static Entity makeEntity(Universe verse, string s, string s2, int x, int y){
             ent.add(Wood());
             ent.add(Shield(1));
             ent.add(CanPickUp());
+            ent.add(Name(s));
             break;
         }
-        case("Slime"):{
+        case("Slime_purple"):{
             ent.add(SpriteRender("sprites/slime_purple.png", vec2i(32, 32), SpriteLayer.Character));
-            ent.add(HP(5));
+            ent.add(HP(6));
             ent.add(TileBlock());
-            ent.add(SlimeAI());
+            ent.add(AISlimePurple());
             ent.add(PrimaryWeaponSlot(Attack(2)));
             ent.add(AttackBait());
+            ent.add(Name("Slime"));
+            break;
+        }
+        case("Slime_green"):{
+            ent.add(SpriteRender("sprites/slime_green.png", vec2i(32, 32), SpriteLayer.Character));
+            ent.add(HP(5));
+            ent.add(TileBlock());
+            ent.add(AISlimeGreen());
+            ent.add(PrimaryWeaponSlot(Attack(2)));
+            ent.add(AttackBait());
+            ent.add(Name("Slime"));
             break;
         }
         default:
@@ -93,14 +107,6 @@ static Entity makePlayer(Universe verse){
     ent.add(DR());
     player = ent;
     return ent;
-}
-
-void onEntityAttacked(ref EntityEvent!AttackEvent ev)
-{
-    if(ev.source == player){
-        string s = "You deal " ~ to!string(ev.a.damage) ~ " damage to the " ~ *(ev.victim.get!Name);
-        addLogMessage(s);
-    }
 }
 
 void registerComponents(ref UniverseAllocated ev)

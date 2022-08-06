@@ -14,7 +14,7 @@ import vibe.data.serialization;
 import std.random;
 import dplug.math.vector;
 
-struct SlimeAI{
+struct AISlimePurple{
     Dir curDir;
     @ignore
     Entity ent;
@@ -27,6 +27,9 @@ struct SlimeAI{
         mp = ent.get!MapPos;
         curDir = cast(Dir)uniform(2, 4);
         subscribe(&onTick);
+    }
+    void onComponentRemoved(Universe verse, EntityID id){
+        unsubscribe(&onTick);
     }
     void onTick(ref TurnTick t){
         int xDelta = 0, yDelta = 0;
@@ -57,11 +60,15 @@ struct SlimeAI{
             case(Dir.Down): curDir = Dir.Up; break;
             case(Dir.Left): curDir = Dir.Right; break;
             case(Dir.Right): curDir = Dir.Left; break;
-            default: writeln("How did this happen?  Slime AI turnaround");
+            default: writeln("How did this happen?  Slime_purple AI turnaround");
         }
     }
 }
 
+struct AISlimeGreen{
+}
+
 void registerAIComponents(Universe verse){
-    verse.registerComponent!SlimeAI;
+    verse.registerComponent!AISlimePurple;
+    verse.registerComponent!AISlimeGreen;
 }
