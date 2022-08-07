@@ -21,9 +21,9 @@ import bindbc.sdl.image;
 import std.random;
 import std.algorithm.searching;
 
-LevelMap levelinit(Universe verse, void* lmPointer, int x, int y){ 
+LevelMap levelinit(int levelNum, Universe verse, int x, int y){ 
     writeln("level init");
-    lm = new LevelMap(verse, x, y);
+    lm = new LevelMap(levelNum, verse, x, y);
     lm.populate();
     spriteDrawables = new typeof(spriteDrawables)(lm.verse);
     return lm;
@@ -58,7 +58,8 @@ class LevelMap{
         int maxRoomWidth = 8, maxRoomHeight = 8;
         Tile[] tiles;
         Room[] rooms;
-        this(Universe uni, int _x, int _y){
+        this(int which, Universe uni, int _x, int _y){
+            levelNum = which;
             verse = uni;
             setUserdata!LevelMap(verse, this);
 
@@ -95,6 +96,30 @@ class LevelMap{
         placeEntInRoom("crate", "shield", r);
         placeEntInRoom("slime_purple", null, r);
         placeEntInRoom("slime_green", null, r);
+        placeEntInRandomRoom("stairs_down", null);
+    }
+        private Room placeEntInRandomRoom(string s, string s2){
+        int whichRoom = cast(int)uniform(0, rooms.length, rand);
+        Room r = rooms[whichRoom];
+        int entX = cast(int)uniform(r.rect.mins.x+1, r.rect.maxs.x, rand);
+        int entY = cast(int)uniform(r.rect.mins.y+1, r.rect.maxs.y, rand);
+        Entity pEnt = makeEntity(verse, s, s2, entX, entY);
+        //writeln("Spawning entity at ", entX, " ", entY );
+        getTile(entX, entY).add(pEnt);
+        if(s == "Player"){
+            cameraXOffset = entX - 15;
+            cameraYOffset = entY - 15;
+        }
+        return r;
+        //Expand -------------------------------
+        //Make sure this doesn't place an object on a tile that's already full
+    }
+    private void placeEntInRoom(string s, string s2, Room r){
+        int entX = cast(int)uniform(r.rect.mins.x+1, r.rect.maxs.x, rand);
+        int entY = cast(int)uniform(r.rect.mins.y+1, r.rect.maxs.y, rand);
+        Entity pEnt = makeEntity(verse, s, s2, entX, entY);
+        //writeln("Spawning entity at ", entX, " ", entY );
+        getTile(entX, entY).add(pEnt);
     }
     private Rect[] partitionPhase(int numPartitions){
         Rect[] partitions;
@@ -268,29 +293,6 @@ class LevelMap{
                 }
             }
         }
-    }
-    private Room placeEntInRandomRoom(string s, string s2){
-        int whichRoom = cast(int)uniform(0, rooms.length, rand);
-        Room r = rooms[whichRoom];
-        int entX = cast(int)uniform(r.rect.mins.x+1, r.rect.maxs.x, rand);
-        int entY = cast(int)uniform(r.rect.mins.y+1, r.rect.maxs.y, rand);
-        Entity pEnt = makeEntity(verse, s, s2, entX, entY);
-        writeln("Spawning entity at ", entX, " ", entY );
-        getTile(entX, entY).add(pEnt);
-        if(s == "Player"){
-            cameraXOffset = entX - 15;
-            cameraYOffset = entY - 15;
-        }
-        return r;
-        //Expand -------------------------------
-        //Make sure this doesn't place an object on a tile that's already full
-    }
-    private void placeEntInRoom(string s, string s2, Room r){
-        int entX = cast(int)uniform(r.rect.mins.x+1, r.rect.maxs.x, rand);
-        int entY = cast(int)uniform(r.rect.mins.y+1, r.rect.maxs.y, rand);
-        Entity pEnt = makeEntity(verse, s, s2, entX, entY);
-        writeln("Spawning entity at ", entX, " ", entY );
-        getTile(entX, entY).add(pEnt);
     }
     private void texturePhase(){
 auto perf = Perf(null);

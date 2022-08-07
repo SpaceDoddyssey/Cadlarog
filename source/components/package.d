@@ -14,7 +14,12 @@ struct Wood{}
 struct Metal{}
 struct CanPickUp{}
 
-struct Stairs{}
+struct Stairs{
+    bool up;
+    this(string s){
+        if(s == "up"){ up = true; } else { up = false; }
+    }
+}
 
 struct Shield{
     int DR;

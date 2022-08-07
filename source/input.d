@@ -82,13 +82,3 @@ void controlHandling(ref LoopStruct l){
 			publish(PickUp());
 	}
 }
-
-/*
-// binds that do logic every frame the key is down
-if(isKeyPressed(SDLK_w))
-  accel.y -= 1;
-
-// binds that do logic only on the first frames where given key is pressed
-if(isKeyPressed(SDLK_space, true))
-  attack();
-*/

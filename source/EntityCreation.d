@@ -31,6 +31,7 @@ static Entity makeEntity(Universe verse, string s, string s2, int x, int y){
     ent.add(PubSub());
     ent.add(MapPos(vec2i(x, y)));
     switch(s){
+        case("Tile"):{ return ent; }
         case("door"):{
             ent.add(SpriteRender("sprites/door_closed.png", vec2i(32, 32), SpriteLayer.Door));
             ent.add(Door(false, "sprites/door_open.png", "sprites/door_closed.png"));
@@ -87,8 +88,22 @@ static Entity makeEntity(Universe verse, string s, string s2, int x, int y){
             ent.add(Name("green slime"));
             break;
         }
-        default:
+        case("stairs_up"):{
+            ent.add(SpriteRender("sprites/stairs_up.png", vec2i(32, 32), SpriteLayer.Door));
+            ent.add(Name("stairs"));
+            ent.add(Stairs("up"));
             break;
+        }
+        case("stairs_down"):{
+            ent.add(SpriteRender("sprites/stairs_down.png", vec2i(32, 32), SpriteLayer.Door));
+            ent.add(Name("stairs"));
+            ent.add(Stairs("down"));
+            break;
+        }
+        default:
+            writeln("Invalid entity string \"" ~ s ~"\"");
+            ent.free();
+            return ent.init;
     }
     return ent;
 }

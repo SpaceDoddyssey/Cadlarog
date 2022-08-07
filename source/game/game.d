@@ -12,6 +12,7 @@ import components.ai;
 import entitycreation;
 import guiinfo;
 import randommodule;
+import savemanager;
 
 import std.stdio;
 import std.random;
@@ -22,14 +23,20 @@ import dplug.math.vector;
 LevelMap lm;
 Universe uni;
 
+int[] savedLevels;
+
 void gameInit(ref AppStartup s){
   rand = Random(seed);
 
   uni = allocUniverse();
   player = makePlayer(uni);
-  levelinit(uni, &lm, 50, 50);
+  levelinit(0, uni, 50, 50);
 
   addLogMessage("Welcome to Cadlarog");
+}
+
+void saveGame(){
+
 }
 
 void pickUp(ref PickUp p){
