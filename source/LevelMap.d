@@ -129,19 +129,19 @@ class LevelMap{
         //The first "partition" is the entire map
         vec2i alpha = vec2i(0, 0);
         vec2i omega = vec2i(maxWidth-1, maxHeight-1);
-        Rect wholeMap = new Rect(alpha, omega);
+        Rect wholeMap = Rect(alpha, omega);
         partitions ~= (wholeMap);
         for(int i = 0; i < numPartitions; i++){
             Rect[] newPartitions;
             if(i % 2 == 0){
-                foreach(Rect space; partitions){
+                foreach(ref Rect space; partitions){
                     newPartitions ~= (space.partitionVertical());
                     for(int y = space.mins.y; y <= space.maxs.y; y++){
                         getTile(space.maxs.x+1,y).type = TileType.Floor;
                     }
                 }
             } else {
-                foreach(Rect space; partitions){
+                foreach(ref Rect space; partitions){
                     newPartitions ~= (space.partitionHorizontal());
                     for(int x = space.mins.x; x <= space.maxs.x; x++){
                         getTile(x,space.maxs.y+1).type = TileType.Floor;
@@ -156,6 +156,15 @@ class LevelMap{
     //If numRooms is greater than the number of partitions, puts a room in every partition
     private void roomGenPhase(Rect[] partitions, int numRooms){
         int[] alreadyUsed;
+
+        writeln("roomGenPhase\n");
+        for(int p=0; p<partitions.length; p++) {
+            Rect r = partitions[p];
+            //writeln("   p=", p,
+            //    ", min=(", r.mins.x, ",", r.mins.y,
+            //    "), max=(", r.maxs.x, ",", r.maxs.y, ")" );
+        }
+
         for(int i = 0; i < numRooms && i < partitions.length; i++){
             int nextIndex = cast(int)uniform(0, partitions.length, rand);
             if(canFind(alreadyUsed, nextIndex)){
@@ -191,7 +200,7 @@ class LevelMap{
             }
             vec2i topRight = vec2i(topX, topY);
 
-            Rect newRect = new Rect(botLeft, topRight);
+            Rect newRect = Rect(botLeft, topRight);
             rooms ~= Room(newRect);
         }
         foreach(Room r; rooms){
@@ -370,7 +379,7 @@ enum TileType{
     RoomBorder
 }
 
-public class Rect
+public struct Rect
 {
     public vec2i mins, maxs;
     public this(vec2i botLeft, vec2i topRight){
@@ -391,7 +400,7 @@ public class Rect
 
         vec2i secondOrigin = vec2i(divisionPoint + 1, mins.y);
         vec2i secondTop = maxs;
-        Rect right = new Rect(secondOrigin, secondTop);
+        Rect right = Rect(secondOrigin, secondTop);
 
         maxs = firstTop;
         return right;
@@ -404,7 +413,7 @@ public class Rect
 
         vec2i secondOrigin = vec2i(mins.x, divisionPoint + 1);
         vec2i secondTop = maxs;
-        Rect top = new Rect(secondOrigin, secondTop);
+        Rect top = Rect(secondOrigin, secondTop);
 
         maxs = firstTop;
         return top;
