@@ -4,6 +4,7 @@ import ecsd;
 import events;
 import perf;
 import components;
+import components.complex;
 import guiinfo;
 
 import std;
@@ -13,11 +14,17 @@ import bindbc.sdl;
 import bindbc.sdl.image;
 import bindbc.sdl.ttf;
 import std.stdio;
+import std.conv;
 
 SDL_Window* window;
 SDL_Renderer* renderer;
 float cameraXOffset; 
 float cameraYOffset;
+
+HP* playerHP;
+SDL_Rect healthRect;
+int maxHealthWidth = 150;
+TextBox hpReadout;
 
 ComponentCache!(Transform, SpriteRender) spriteDrawables;
 SDL_Texture*[string] textureCache;
@@ -125,6 +132,13 @@ void rendererInit(ref AppStartup s){
 
     curFont = TTF_OpenFont(fontPath.toStringz(), fontSize);
     //if(curFont != null){ writeln("font loaded"); }
+
+    healthRect.x = 200;
+    healthRect.y = vpHeight - 29;
+    healthRect.w = maxHealthWidth;
+    healthRect.h = 26;
+    
+    hpReadout = TextBox("");
 }
 
 void appShutdown(ref FinishStruct f){
@@ -173,6 +187,17 @@ void renderLoop(ref LoopStruct l){
         SDL_RenderCopy(renderer, mess.texture, null, &dstrect);
     }
 
+//Render health bar
+/*    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 0);
+    SDL_RenderDrawRect(renderer, &healthRect);
+    SDL_RenderFillRect(renderer, &healthRect);
+
+    SDL_Surface* surface = TTF_RenderText_Shaded(curFont, "HP:" ~ , white);
+    hpReadout.texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_QueryTexture(mess.texture, null, null, &mess.textWidth, &mess.textHeight);
+    mess.initialized = true;
+    SDL_FreeSurface(surface);
+*/
     SDL_RenderPresent(renderer);
 }
 

@@ -97,8 +97,11 @@ class LevelMap{
         placeEntInRoom("slime_purple", null, r);
         placeEntInRoom("slime_green", null, r);
         placeEntInRandomRoom("stairs_down", null);
+        if(levelNum != 0){
+            placeEntInRandomRoom("stairs_up", null);
+        }
     }
-        private Room placeEntInRandomRoom(string s, string s2){
+    private Room placeEntInRandomRoom(string s, string s2){
         int whichRoom = cast(int)uniform(0, rooms.length, rand);
         Room r = rooms[whichRoom];
         int entX = cast(int)uniform(r.rect.mins.x+1, r.rect.maxs.x, rand);
@@ -189,7 +192,7 @@ class LevelMap{
             vec2i topRight = vec2i(topX, topY);
 
             Rect newRect = new Rect(botLeft, topRight);
-            rooms ~= (new Room(newRect));
+            rooms ~= Room(newRect);
         }
         foreach(Room r; rooms){
             for(int x = r.rect.mins.x; x <= r.rect.maxs.x; x++){
@@ -295,7 +298,6 @@ class LevelMap{
         }
     }
     private void texturePhase(){
-auto perf = Perf(null);
         foreach(t; tiles){
             string target;
             switch(t.type){
@@ -409,11 +411,12 @@ public class Rect
     }
 }
 
-public class Room 
+public struct Room 
 {
     public Rect rect;
     public this(Rect _rect){
         rect = _rect;
     }
+    alias rect this;
     //Add function to get random tile in room
 }

@@ -9,25 +9,38 @@ import ecsd.userdata;
 import game;
 import levelmap;
 import playermodule;
-/*
-struct SaveFile {
+
+//SaveFile saveFile;
+
+/*struct SaveFile {
     Bson savePlayer;
     LevelSave[] levels;
 
-    this(){
+    public this(){
         savePlayer = uni.serializeEntity(player);
+        //level stuff
     }
 
     static struct LevelSave {
         Bson universe;
         uint[] tiles;
-        // other levelmap fields
+        int levelNum;
+        int maxWidth, maxHeight;
+        int minRoomWidth = 5, minRoomHeight = 5;
+        int maxRoomWidth = 8, maxRoomHeight = 8;
+        Room[] rooms;
+        this(LevelMap map){
+            levelNum = map.levelNum;
+            maxWidth = map.maxWidth;
+            maxHeight = map.maxHeight;
+            rooms = map.rooms;
+        }
     }
-}
-*/
-void saveGameInfo(){
 
-}
+    void addLevel(){
+        
+    }
+}*/
 
 void savePlayerInfo(){
     Bson bson = uni.serializeEntity(player);
