@@ -6,7 +6,7 @@ import components;
 import components.complex;
 import components.equipslots;
 import systems;
-import renderer;
+import rendermodule;
 import playermodule;
 import components.ai;
 import entitycreation;
@@ -50,6 +50,10 @@ void saveGame(){
   
   saveVerse();
 //  uni.freeUniverse();
+
+  foreach(ref mess; messages){
+    writeln(mess.message);
+  }
 }
 
 void loadGame(){
@@ -59,6 +63,12 @@ void loadGame(){
   loadGameInfo();
   uni = loadVerse(gameData.curLevel);
   
+  foreach(Entity ent; uni)
+      if(auto ptr = ent.tryGet!SpriteRender){
+        writeln("hello");
+          ptr.path = ptr.path; // runs setter which assigns texture pointer
+      }
+
   //player = loadPlayerInfo();
 }
 

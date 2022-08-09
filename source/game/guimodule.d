@@ -5,6 +5,9 @@ import bindbc.sdl.image;
 import bindbc.sdl.ttf;
 import std.stdio;
 import std.range;
+import std.conv;
+import rendermodule;
+import std.string;
 
 TTF_Font* curFont;
 
@@ -34,7 +37,13 @@ struct TextBox{
     SDL_Texture * texture;
     this(string s){
         message = s;
+        SDL_Surface* surface = TTF_RenderText_Shaded(curFont, message.toStringz(), white, black);
+        texture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_QueryTexture(texture, null, null, &textWidth, &textHeight);
+        initialized = true;
+        SDL_FreeSurface(surface);
     }
+    this(this) { texture = null; initialized = false; }
     ~this(){
         SDL_DestroyTexture(texture);
     }

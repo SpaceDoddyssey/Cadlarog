@@ -3,7 +3,7 @@ module entitycreation;
 import ecsd;
 import ecsd.events;
 import events;
-import renderer;
+import rendermodule;
 import playermodule;
 import guiinfo;
 

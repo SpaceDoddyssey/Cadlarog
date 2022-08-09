@@ -6,7 +6,7 @@ import ecsd;
 import ecsd.events;
 import ecsd.userdata;
 import game;
-import renderer;
+import rendermodule;
 import entitycreation;
 import perf;
 import input;

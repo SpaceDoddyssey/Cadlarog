@@ -11,7 +11,7 @@ import vibe.data.serialization;
 
 mixin registerSubscribers;
 
-import renderer;
+import rendermodule;
 import events;
 import guiinfo;
 import playermodule;

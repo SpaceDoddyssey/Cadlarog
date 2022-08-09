@@ -16,3 +16,4 @@ roguelike-test-*
 *.pdb
 optional/
 .vscode/
+savedata/*

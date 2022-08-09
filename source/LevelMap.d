@@ -4,7 +4,7 @@ import events;
 import app;
 import ecsd;
 import ecsd.userdata;
-import renderer;
+import rendermodule;
 import entitycreation;
 import perf;
 import components;

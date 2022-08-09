@@ -1,4 +1,4 @@
-module renderer;
+module rendermodule;
 
 import ecsd;
 import events;
@@ -132,13 +132,13 @@ void rendererInit(ref AppStartup s){
 
     curFont = TTF_OpenFont(fontPath.toStringz(), fontSize);
     //if(curFont != null){ writeln("font loaded"); }
-
+/*
     healthRect.x = 200;
     healthRect.y = vpHeight - 29;
     healthRect.w = maxHealthWidth;
     healthRect.h = 26;
     
-    hpReadout = TextBox("");
+    hpReadout = TextBox("");*/
 }
 
 void appShutdown(ref FinishStruct f){
@@ -176,13 +176,13 @@ void renderLoop(ref LoopStruct l){
 
 //Text rendering
     foreach(i, ref mess; messages){
-        if(!mess.initialized){
+/*        if(!mess.initialized){
             SDL_Surface* surface = TTF_RenderText_Shaded(curFont, mess.message.toStringz(), white, black);
             mess.texture = SDL_CreateTextureFromSurface(renderer, surface);
             SDL_QueryTexture(mess.texture, null, null, &mess.textWidth, &mess.textHeight);
             mess.initialized = true;
             SDL_FreeSurface(surface);
-        }
+        }*/
         SDL_Rect dstrect = { 4, 4 + cast(int)i*(mess.textHeight + 2), mess.textWidth, mess.textHeight };
         SDL_RenderCopy(renderer, mess.texture, null, &dstrect);
     }
@@ -202,7 +202,7 @@ void renderLoop(ref LoopStruct l){
 }
 
 void cameraMove(ref CameraMove m){
-  import renderer: cameraXOffset, cameraYOffset;
+  import rendermodule: cameraXOffset, cameraYOffset;
   switch(m.dir){
     case Dir.Left:
         cameraXOffset -= 0.3; break;
