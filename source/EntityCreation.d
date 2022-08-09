@@ -28,7 +28,6 @@ static Entity makeEntity(Universe verse, string s, string s2, int x, int y){
     }
     Entity ent = Entity(verse.allocEntity);
     ent.add(Transform(vec2i(x*32, y*32)));
-    ent.add(PubSub());
     ent.add(MapPos(vec2i(x, y)));
     switch(s){
         case("Tile"):{ return ent; }
@@ -111,7 +110,6 @@ static Entity makeEntity(Universe verse, string s, string s2, int x, int y){
 static Entity makePlayer(Universe verse){
     Entity ent = Entity(verse.allocEntity);
     ent.add(Name("Hero"));
-    ent.add(PubSub());
     ent.add(SpriteRender("sprites/playerChar.png", vec2i(32, 32), SpriteLayer.Character));
     ent.add(Transform(vec2i(0, 0)));
     ent.add(MapPos(vec2i(0, 0)));

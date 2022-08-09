@@ -4,9 +4,10 @@ import ecsd;
 import events;
 import levelmap;
 import playermodule;
+import game;
+
 import bindbc.sdl;
 import dplug.math.vector;
-
 import std.stdio;
 
 bool[SDL_NUM_SCANCODES] keyboardState;
@@ -65,7 +66,7 @@ void controlHandling(ref LoopStruct l){
     if(isKeyPressed(SDLK_RIGHT))
         publish(CameraMove(Dir.Right));
     
-	//Player actions
+	//Disabled if player is dead
 	if(player.valid){
 		//Player movement
 		if(isKeyPressed(SDLK_s, true))
@@ -80,5 +81,10 @@ void controlHandling(ref LoopStruct l){
 		//Player actions
 		if(isKeyPressed(SDLK_p, true))
 			publish(PickUp());
+
+		if(isKeyPressed(SDLK_F5, true))
+			saveGame();
+		if(isKeyPressed(SDLK_F8, true))
+			loadGame();
 	}
 }

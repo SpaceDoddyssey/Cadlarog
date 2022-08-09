@@ -9,16 +9,21 @@ import ecsd.userdata;
 import game;
 import levelmap;
 import playermodule;
+/*
+SaveFile saveFile = void;
 
-//SaveFile saveFile;
-
-/*struct SaveFile {
+public struct SaveFile {
     Bson savePlayer;
     LevelSave[] levels;
 
-    public this(){
-        savePlayer = uni.serializeEntity(player);
-        //level stuff
+    public void save(){
+        savePlayerInfo();
+        player.free();
+        Bson bson = uni.serialize(); // all active entities are serialized
+        immutable(ubyte)[] bytes = bson.data;
+        LevelMap map = uni.getUserdata!LevelMap;
+        string bsonName = "Level " ~ to!string(map.levelNum) ~ ".bson";
+        writeBinary(bsonName, bytes);
     }
 
     static struct LevelSave {
@@ -30,6 +35,7 @@ import playermodule;
         int maxRoomWidth = 8, maxRoomHeight = 8;
         Room[] rooms;
         this(LevelMap map){
+            universe = uni.serialize();
             levelNum = map.levelNum;
             maxWidth = map.maxWidth;
             maxHeight = map.maxHeight;
@@ -40,17 +46,32 @@ import playermodule;
     void addLevel(){
         
     }
-}*/
+}
+*/
+
+void saveGameInfo(){
+    Bson bson = serializeToBson(gameData);
+    auto bytes = bson.data;
+    string bsonName = "savedata/GameData.bson";
+    writeBinary(bsonName, bytes);
+}
+
+void loadGameInfo(){
+    string bsonName = "savedata/GameData.bson";
+    auto bytes = cast(immutable(ubyte)[])readBinary(bsonName);
+    auto bson = Bson(Bson.Type.object, bytes);
+    gameData = deserializeBson!GameInfo(bson);
+}
 
 void savePlayerInfo(){
     Bson bson = uni.serializeEntity(player);
     auto bytes = bson.data;
-    string bsonName = "Player.bson";
+    string bsonName = "savedata/Player.bson";
     writeBinary(bsonName, bytes);
 }
 
 Entity loadPlayerInfo(){
-    string bsonName = "Player.bson";
+    string bsonName = "savedata/Player.bson";
     auto bytes = cast(immutable(ubyte)[])readBinary(bsonName);
     auto bson = Bson(Bson.Type.array, bytes);
     Entity ent = uni.allocEntity();
@@ -59,17 +80,15 @@ Entity loadPlayerInfo(){
 }
 
 void saveVerse(){
-    savePlayerInfo();
-    player.free();
     Bson bson = uni.serialize(); // all active entities are serialized
     immutable(ubyte)[] bytes = bson.data;
     LevelMap map = uni.getUserdata!LevelMap;
-    string bsonName = "Level " ~ to!string(map.levelNum) ~ ".bson";
+    string bsonName = "savedata/Level " ~ to!string(map.levelNum) ~ ".bson";
     writeBinary(bsonName, bytes);
 }
 
 Universe loadVerse(int whichLevel){
-    string bsonName = "Level " ~ to!string(whichLevel) ~ ".bson";
+    string bsonName = "savedata/Level " ~ to!string(whichLevel) ~ ".bson";
     auto bytes = cast(immutable(ubyte)[])readBinary(bsonName);
     auto bson = Bson(Bson.Type.array, bytes);
     Universe verse = allocUniverse();

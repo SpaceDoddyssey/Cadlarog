@@ -44,6 +44,7 @@ scope(exit) Perf
 
 void subscribeFunctions(){
     writeln("Subscribing functions");
+    subscribe(&onEntityAlloc);
     subscribe(&placeEntity);
     subscribe(&gameInit);
     subscribe(&rendererInit, int.max >> 1);
@@ -56,6 +57,10 @@ void subscribeFunctions(){
     subscribe(&playerMove);
     subscribe(&processEvent);
     subscribe(&controlHandling);
+}
+
+void onEntityAlloc(ref EntityAllocated ev) {
+  if(!ev.entity.has!PubSub) ev.entity.add!PubSub;
 }
 
 void init(){

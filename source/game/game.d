@@ -23,9 +23,16 @@ import dplug.math.vector;
 LevelMap lm;
 Universe uni;
 
-int[] savedLevels;
+GameInfo gameData = void;
+
+struct GameInfo{
+  int curLevel;
+  int[] savedLevels;
+  this(int i){ curLevel = i; }
+}
 
 void gameInit(ref AppStartup s){
+  gameData = GameInfo();
   rand = Random(seed);
 
   uni = allocUniverse();
@@ -36,7 +43,23 @@ void gameInit(ref AppStartup s){
 }
 
 void saveGame(){
+  saveGameInfo();
+
+ // savePlayerInfo();
+  //player.free();
   
+  saveVerse();
+//  uni.freeUniverse();
+}
+
+void loadGame(){
+  player.free();
+  uni.freeUniverse();
+
+  loadGameInfo();
+  uni = loadVerse(gameData.curLevel);
+  
+  //player = loadPlayerInfo();
 }
 
 void pickUp(ref PickUp p){
