@@ -4,6 +4,7 @@ import bindbc.sdl;
 import bindbc.sdl.image;
 import bindbc.sdl.ttf;
 import std.stdio;
+import std.algorithm;
 import std.range;
 import std.conv;
 import rendermodule;
@@ -24,8 +25,10 @@ SDL_Color red   = { 0xFF, 0x00, 0x00, 0 };
 SDL_Color green = { 0x00, 0xFF, 0x00, 0 };
 
 void addLogMessage(string mess){
-    messages ~= TextBox(mess);
+    messages.length++;
+    messages.back = TextBox(mess);
     if(messages.length > numMessagesToRender){
+        move(messages.front);
         messages.popFront();
     }
 }
@@ -43,8 +46,8 @@ struct TextBox{
         initialized = true;
         SDL_FreeSurface(surface);
     }
-    this(this) { texture = null; initialized = false; }
+    @disable this(this);
     ~this(){
-        SDL_DestroyTexture(texture);
+        if(texture !is null) SDL_DestroyTexture(texture);
     }
 }
