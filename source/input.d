@@ -81,10 +81,9 @@ void controlHandling(ref LoopStruct l){
 		//Player actions
 		if(isKeyPressed(SDLK_p, true))
 			publish(PickUp());
-
-		if(isKeyPressed(SDLK_F5, true))
-			saveGame();
-		if(isKeyPressed(SDLK_F8, true))
-			loadGame();
 	}
+	if(isKeyPressed(SDLK_F5, true))
+		saveGame();
+	if(isKeyPressed(SDLK_F8, true))
+		loadGame();
 }

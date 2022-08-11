@@ -40,14 +40,16 @@ enum SpriteLayer{
 struct SpriteRender{
     private:
         SDL_Texture *texture;
-        string pathString;
     public:
+        string pathString;
         bool enabled;
         SpriteLayer layer;
         vec2i size;
         this(string p, vec2i s, SpriteLayer l){
             path = p; size = s; layer = l; enabled = true;
         }
+//        @disable
+//        this(this);
         void path(string p){
             pathString = p;
             texture = getTexture(p);
@@ -230,7 +232,12 @@ SDL_Texture* loadTextureFromImage(string path)
     import std.string: toStringz; // D's string type to char*
 
     auto surface = IMG_Load(path.toStringz());
+    writeln("Path = " ~ path);
     if(surface is null) fatalf(
 "Could not load texture at %s (SDL error: `%s`)", path, SDL_GetError().fromStringz);    scope(exit) SDL_FreeSurface(surface);
+    if(surface is null){
+
+        surface = IMG_Load("sprites/Empty.png");
+    }
     return SDL_CreateTextureFromSurface(renderer, surface);
 }

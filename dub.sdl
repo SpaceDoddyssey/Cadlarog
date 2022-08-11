@@ -1,4 +1,5 @@
-name "Cadlarog"
+name "cadlarog"
+targetName "Cadlarog"
 description "My masterpiece"
 authors "Cameron Dodd"
 copyright "Copyright © 2022, Cameron Dodd"

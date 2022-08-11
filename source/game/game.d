@@ -45,15 +45,11 @@ void gameInit(ref AppStartup s){
 void saveGame(){
   saveGameInfo();
 
- // savePlayerInfo();
-  //player.free();
+  savePlayerInfo();
+  player.free();
   
   saveVerse();
-//  uni.freeUniverse();
-
-  foreach(ref mess; messages){
-    writeln(mess.message);
-  }
+  player = loadPlayerInfo();
 }
 
 void loadGame(){
@@ -63,13 +59,15 @@ void loadGame(){
   loadGameInfo();
   uni = loadVerse(gameData.curLevel);
   
-  foreach(Entity ent; uni)
+/*  foreach(Entity ent; uni)
       if(auto ptr = ent.tryGet!SpriteRender){
-        writeln("hello");
           ptr.path = ptr.path; // runs setter which assigns texture pointer
-      }
+      }*/
 
-  //player = loadPlayerInfo();
+  lm = uni.getUserdata!LevelMap;
+  writeln("lm maxWidth = ", lm.maxWidth, "   tiles.length = ", lm.tiles.length); 
+
+  player = loadPlayerInfo();
 }
 
 void pickUp(ref PickUp p){

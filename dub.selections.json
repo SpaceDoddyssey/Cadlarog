@@ -6,6 +6,7 @@
 		"dplug": "12.7.0",
 		"ecsd": {"path":"ecsd"},
 		"intel-intrinsics": "1.10.2",
+		"ringbuffer": "2.1.0",
 		"stdx-allocator": "2.77.5",
 		"vibe-d": "0.9.5"
 	}
