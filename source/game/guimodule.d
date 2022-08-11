@@ -9,15 +9,15 @@ import std.range;
 import std.conv;
 import rendermodule;
 import std.string;
+import ringbuffer;
 
 TTF_Font* curFont;
 
 int fontSize = 16;
 string fontPath = "fonts/PressStart2P-Regular.ttf";
 
-TextBox[] messages;
-
-int numMessagesToRender = 7;
+enum numMessagesToRender = 7;
+RingBuffer!(TextBox, numMessagesToRender + 1) messages;
 
 SDL_Color white = { 0xFF, 0xFF, 0xFF, 0 };
 SDL_Color black = { 0x00, 0x00, 0x00, 0 };
@@ -25,11 +25,9 @@ SDL_Color red   = { 0xFF, 0x00, 0x00, 0 };
 SDL_Color green = { 0x00, 0xFF, 0x00, 0 };
 
 void addLogMessage(string mess){
-    messages.length++;
-    messages.back = TextBox(mess);
-    if(messages.length > numMessagesToRender){
-        move(messages.front);
-        messages.popFront();
+    messages.push(TextBox(mess));
+    if(messages.length > numMessagesToRender){ 
+        messages.pop;
     }
 }
 
