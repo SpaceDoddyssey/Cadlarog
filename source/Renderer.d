@@ -48,8 +48,6 @@ struct SpriteRender{
         this(string p, vec2i s, SpriteLayer l){
             path = p; size = s; layer = l; enabled = true;
         }
-//        @disable
-//        this(this);
         void path(string p){
             pathString = p;
             texture = getTexture(p);

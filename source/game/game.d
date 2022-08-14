@@ -58,16 +58,20 @@ void loadGame(){
 
   loadGameInfo();
   uni = loadVerse(gameData.curLevel);
-  
-/*  foreach(Entity ent; uni)
-      if(auto ptr = ent.tryGet!SpriteRender){
-          ptr.path = ptr.path; // runs setter which assigns texture pointer
-      }*/
 
-  lm = uni.getUserdata!LevelMap;
-  writeln("lm maxWidth = ", lm.maxWidth, "   tiles.length = ", lm.tiles.length); 
+  spriteDrawables = new typeof(spriteDrawables)(lm.verse);
 
   player = loadPlayerInfo();
+
+  foreach(ref Tile t; lm.tiles){
+    t.ents.clear();
+  }
+  ComponentCache!(MapPos) mapEnts;
+  mapEnts = new typeof(mapEnts)(lm.verse);
+  mapEnts.refresh();
+  foreach(ent, ref pos; mapEnts){
+    lm.getTile(pos).add(ent);
+  }
 }
 
 void pickUp(ref PickUp p){

@@ -14,6 +14,7 @@ import set;
 import game;
 import randommodule;
 
+import vibe.data.serialization;
 import dplug.math.vector;
 import std.stdio;
 import bindbc.sdl;
@@ -51,13 +52,17 @@ void placeEntity(ref PlaceEntity p){
 class LevelMap{
     public:
         int levelNum;
+        @ignore
         Universe verse;
         static float tileSize = 1.0f;
         int maxWidth, maxHeight;
+        @ignore
         int minRoomWidth = 5, minRoomHeight = 5;
+        @ignore
         int maxRoomWidth = 8, maxRoomHeight = 8;
         Tile[] tiles;
         Room[] rooms;
+        this() @safe {}
         this(int which, Universe uni, int _x, int _y){
             levelNum = which;
             verse = uni;
@@ -100,6 +105,26 @@ class LevelMap{
         if(levelNum != 0){
             placeEntInRandomRoom("stairs_up", null);
         }
+    }
+    void lookForEnts(){ //debug function
+        foreach(Tile t ; tiles){
+            if(t.ents.length() != 0){
+                writeln("Ent(s) found at ", t.mpos.x, " ", t.mpos.y);
+            }
+        } writeln("done looking");
+    }
+    void moveEntity(Entity e, vec2i source, vec2i dest){
+        if(e.has!MapPos){
+            MapPos* m = e.get!MapPos;
+            m.position = dest;
+        }
+        if(e.has!Transform){
+            Transform* t = e.get!Transform;
+            t.position = vec2i(dest.x * 32, dest.y * 32);
+        }
+
+        getTile(source).remove(e);
+        getTile(dest).add(e);
     }
     private Room placeEntInRandomRoom(string s, string s2){
         int whichRoom = cast(int)uniform(0, rooms.length, rand);
@@ -321,34 +346,16 @@ class LevelMap{
             t.tileEnt.add(SpriteRender(target, vec2i(32, 32), SpriteLayer.Floor));
         }
     }
-    void lookForEnts(){ //debug function
-        foreach(Tile t ; tiles){
-            if(t.ents.length() != 0){
-                writeln("Ent(s) found at ", t.mpos.x, " ", t.mpos.y);
-            }
-        } writeln("done looking");
-    }
-    void moveEntity(Entity e, vec2i source, vec2i dest){
-        if(e.has!MapPos){
-            MapPos* m = e.get!MapPos;
-            m.position = dest;
-        }
-        if(e.has!Transform){
-            Transform* t = e.get!Transform;
-            t.position = vec2i(dest.x * 32, dest.y * 32);
-        }
-
-        getTile(source).remove(e);
-        getTile(dest).add(e);
-    }
 }
 
 public struct Tile{
     Transform pos;
     MapPos mpos;
     TileType type;
+    @ignore
     SDL_Texture* tex;
-    Entity tileEnt = void;
+    @ignore
+    Entity tileEnt;
     void setPos(int x, int y){
         pos.position.x = x;
         pos.position.y = y;

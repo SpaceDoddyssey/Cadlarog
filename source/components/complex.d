@@ -8,8 +8,7 @@ import std.typecons;
 import std.random;
 import std.conv;
 import vibe.data.serialization;
-
-mixin registerSubscribers;
+import vibe.data.bson;
 
 import rendermodule;
 import events;
@@ -23,6 +22,10 @@ struct HP{
     Entity ent;
     this(int h){
         curHP = maxHP = h;
+    }
+    void onComponentDeserialized(Universe uni,EntityID owner,Bson bson){
+        ent = Entity(owner);
+        (ent.get!PubSub).subscribe(&receiveAttack);
     }
     void onComponentAdded(Universe verse, EntityID id){
         ent = Entity(id);
@@ -43,6 +46,7 @@ struct HP{
         //Note: maybe should handle death better 
     }
     void receiveAttack(Entity e, ref AttackEvent atEv){
+        writeln("Hello");
         int damageDone = atEv.a.damage - damRed;
         if(damageDone < 0) { damageDone = 0; }
         if(atEv.source == player){
@@ -62,6 +66,11 @@ struct Door{
     string openSprite, closedSprite;
     @ignore
     Entity ent;
+    void onComponentDeserialized(Universe uni,EntityID owner,Bson bson){
+        ent = Entity(owner);
+        (ent.get!PubSub).subscribe(&doorOpen);
+        (ent.get!PubSub).subscribe(&doorClose);
+    }
     void onComponentAdded(Universe verse, EntityID id){
         ent = Entity(id);
         (ent.get!PubSub).subscribe(&doorOpen);
@@ -88,7 +97,10 @@ struct Contents{
     alias contents this;
     @ignore
     Entity ent;
-
+    void onComponentDeserialized(Universe uni,EntityID owner,Bson bson){
+        ent = Entity(owner);
+        (ent.get!PubSub).subscribe(&die);
+    }
     void onComponentAdded(Universe verse, EntityID id){
         ent = Entity(id);
         (ent.get!PubSub).subscribe(&die);

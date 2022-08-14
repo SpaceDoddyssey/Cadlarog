@@ -2,4 +2,4 @@ module playermodule;
 
 import ecsd;
 
-Entity player = void;
+Entity player;

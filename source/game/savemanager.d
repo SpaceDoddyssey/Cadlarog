@@ -9,6 +9,66 @@ import ecsd.userdata;
 import game;
 import levelmap;
 import playermodule;
+
+void saveGameInfo(){
+    Bson bson = serializeToBson(gameData);
+    auto bytes = bson.data;
+    string bsonName = "savedata/GameData.bson";
+    writeBinary(bsonName, bytes);
+}
+
+void loadGameInfo(){
+    string bsonName = "savedata/GameData.bson";
+    auto bytes = cast(immutable(ubyte)[])readBinary(bsonName);
+    auto bson = Bson(Bson.Type.object, bytes);
+    gameData = deserializeBson!GameInfo(bson);
+}
+
+void savePlayerInfo(){
+    Bson bson = uni.serializeEntity(player);
+    auto bytes = bson.data;
+    string bsonName = "savedata/Player.bson";
+    writeBinary(bsonName, bytes);
+}
+
+Entity loadPlayerInfo(){
+    string bsonName = "savedata/Player.bson";
+    auto bytes = cast(immutable(ubyte)[])readBinary(bsonName);
+    auto bson = Bson(Bson.Type.array, bytes);
+    Entity ent = uni.allocEntity();
+    uni.deserializeEntity(ent, bson);
+    return ent;
+}
+
+void saveVerse(){
+    Bson bson = uni.serialize(); // all active entities are serialized
+    immutable(ubyte)[] bytes = bson.data;
+    LevelMap map = uni.getUserdata!LevelMap;
+    string bsonName = "savedata/Level " ~ to!string(map.levelNum) ~ "verse.bson";
+    writeBinary(bsonName, bytes);
+    
+    Bson lmbson = serializeToBson(lm); // all active entities are serialized
+    immutable(ubyte)[] lmbytes = lmbson.data;
+    bsonName = "savedata/Level " ~ to!string(map.levelNum) ~ "lm.bson";
+    writeBinary(bsonName, lmbytes);
+}
+
+Universe loadVerse(int whichLevel){
+    Universe verse = allocUniverse();
+    auto bsonName = "savedata/Level " ~ to!string(whichLevel) ~ "lm.bson";
+    auto lmbytes = cast(immutable(ubyte)[])readBinary(bsonName);
+    auto lmbson = Bson(Bson.Type.object, lmbytes);
+    LevelMap newLM = deserializeBson!LevelMap(lmbson);
+    lm = newLM;
+    lm.verse = verse;
+    setUserdata!LevelMap(verse, lm);
+    bsonName = "savedata/Level " ~ to!string(whichLevel) ~ "verse.bson";
+    auto bytes = cast(immutable(ubyte)[])readBinary(bsonName);
+    auto bson = Bson(Bson.Type.array, bytes);
+    verse.deserialize(bson); // allocates and populates new entities
+    return verse;
+}
+
 /*
 SaveFile saveFile = void;
 
@@ -48,50 +108,3 @@ public struct SaveFile {
     }
 }
 */
-
-void saveGameInfo(){
-    Bson bson = serializeToBson(gameData);
-    auto bytes = bson.data;
-    string bsonName = "savedata/GameData.bson";
-    writeBinary(bsonName, bytes);
-}
-
-void loadGameInfo(){
-    string bsonName = "savedata/GameData.bson";
-    auto bytes = cast(immutable(ubyte)[])readBinary(bsonName);
-    auto bson = Bson(Bson.Type.object, bytes);
-    gameData = deserializeBson!GameInfo(bson);
-}
-
-void savePlayerInfo(){
-    Bson bson = uni.serializeEntity(player);
-    auto bytes = bson.data;
-    string bsonName = "savedata/Player.bson";
-    writeBinary(bsonName, bytes);
-}
-
-Entity loadPlayerInfo(){
-    string bsonName = "savedata/Player.bson";
-    auto bytes = cast(immutable(ubyte)[])readBinary(bsonName);
-    auto bson = Bson(Bson.Type.array, bytes);
-    Entity ent = uni.allocEntity();
-    uni.deserializeEntity(ent, bson);
-    return ent;
-}
-
-void saveVerse(){
-    Bson bson = uni.serialize(); // all active entities are serialized
-    immutable(ubyte)[] bytes = bson.data;
-    LevelMap map = uni.getUserdata!LevelMap;
-    string bsonName = "savedata/Level " ~ to!string(map.levelNum) ~ ".bson";
-    writeBinary(bsonName, bytes);
-}
-
-Universe loadVerse(int whichLevel){
-    string bsonName = "savedata/Level " ~ to!string(whichLevel) ~ ".bson";
-    auto bytes = cast(immutable(ubyte)[])readBinary(bsonName);
-    auto bson = Bson(Bson.Type.array, bytes);
-    Universe verse = allocUniverse();
-    verse.deserialize(bson); // allocates and populates new entities
-    return verse;
-}

@@ -13,7 +13,7 @@ struct PlayerMove{ Dir dir; this(Dir d){ dir = d; } }
 struct PickUp{}
 
 struct NpcMove{
-  Entity e = void;
+  Entity e;
   //vec2i v;
   this(Entity ent){
     e = ent;
@@ -50,7 +50,7 @@ struct SDLEvent{
 }
 
 struct PlaceEntity{
-  Entity e = void;
+  Entity e;
   vec2i v;
   this(Entity ent, vec2i vec){
     e = ent;

@@ -2,12 +2,23 @@ module components;
 
 import ecsd;
 import ecsd.events;
+import ecsd.userdata;
 import dplug.math.vector;
+import vibe.data.bson;
+
+import levelmap;
 
 struct Name{ string name; alias name this; }
 
 struct Transform{ vec2i position; alias position this; }
-struct MapPos{ vec2i position; alias position this; }
+struct MapPos{ 
+    vec2i position; 
+    alias position this; 
+    void onComponentDeserialized(Universe uni,EntityID owner,Bson bson){
+        LevelMap lm = uni.getUserdata!LevelMap;
+        lm.getTile(position).add(Entity(owner));
+    }
+}
 struct AttackBait{}
 struct TileBlock{}
 struct Wood{}
