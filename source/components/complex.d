@@ -25,7 +25,8 @@ struct HP{
     }
     void onComponentDeserialized(Universe uni,EntityID owner,Bson bson){
         ent = Entity(owner);
-        (ent.get!PubSub).subscribe(&receiveAttack);
+        writeln("\nEntity pubsub: ", ent.get!PubSub);
+        writeln("HP:", ent.get!HP);
     }
     void onComponentAdded(Universe verse, EntityID id){
         ent = Entity(id);
@@ -68,8 +69,6 @@ struct Door{
     Entity ent;
     void onComponentDeserialized(Universe uni,EntityID owner,Bson bson){
         ent = Entity(owner);
-        (ent.get!PubSub).subscribe(&doorOpen);
-        (ent.get!PubSub).subscribe(&doorClose);
     }
     void onComponentAdded(Universe verse, EntityID id){
         ent = Entity(id);
