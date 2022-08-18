@@ -10,7 +10,7 @@ import rendermodule;
 import playermodule;
 import components.ai;
 import entitycreation;
-import guiinfo;
+import guimodule;
 import randommodule;
 import savemanager;
 
@@ -24,9 +24,6 @@ LevelMap lm;
 Universe uni;
 
 GameInfo gameData = void;
-
-bool currentlySaving = false;
-bool currentlyLoading = false;
 
 struct GameInfo{
   int curLevel;
@@ -50,7 +47,7 @@ void gameInit(ref AppStartup s){
 }
 
 void saveGame(){
-  currentlySaving = true;
+  showSavePopup();
   saveGameInfo();
 
   savePlayerInfo();
@@ -58,11 +55,10 @@ void saveGame(){
   
   saveVerse();
   player = loadPlayerInfo();
-  currentlySaving = false;
 }
 
 void loadGame(){
-  currentlyLoading = true;
+  showLoadPopup();
   if(player.valid){
     player.free();
   }
@@ -84,7 +80,6 @@ void loadGame(){
   foreach(ent, ref pos; mapEnts){
     lm.getTile(pos).add(ent);
   }
-  currentlyLoading = false;
 }
 
 void pickUp(ref PickUp p){

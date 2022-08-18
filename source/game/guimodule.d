@@ -1,4 +1,4 @@
-module guiinfo;
+module guimodule;
 
 import bindbc.sdl;
 import bindbc.sdl.image;
@@ -52,7 +52,24 @@ struct SavePopup{
     int textWidth, textHeight;
     SDL_Texture * texture;
     this(bool garbage){
-        SDL_Surface* surface = TTF_RenderText_Shaded(curFont, "Saving", white, black);
+        SDL_Surface* surface = TTF_RenderText_Shaded(curFont, "Saving...", white, black);
+        texture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_QueryTexture(texture, null, null, &textWidth, &textHeight);
+        textWidth *= 2;
+        textHeight *= 2;
+        SDL_FreeSurface(surface);
+    }
+    @disable this(this);
+    ~this(){
+        if(texture !is null) SDL_DestroyTexture(texture);
+    }
+}
+
+struct LoadPopup{
+    int textWidth, textHeight;
+    SDL_Texture * texture;
+    this(bool garbage){
+        SDL_Surface* surface = TTF_RenderText_Shaded(curFont, "Loading...", white, black);
         texture = SDL_CreateTextureFromSurface(renderer, surface);
         SDL_QueryTexture(texture, null, null, &textWidth, &textHeight);
         textWidth *= 2;

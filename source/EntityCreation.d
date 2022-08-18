@@ -6,7 +6,7 @@ import ecsd.storage;
 import events;
 import rendermodule;
 import playermodule;
-import guiinfo;
+import guimodule;
 
 import components;
 import components.complex;
@@ -101,6 +101,13 @@ static Entity makeEntity(Universe verse, string s, string s2, int x, int y){
             ent.add(Name("stairs"));
             ent.add(Stairs("down"));
             break;
+        }
+        case("press_plate"):{
+            ent.add(PressurePlate());
+            break;
+        }
+        case(""):{
+            
         }
         default:
             writeln("Invalid entity string \"" ~ s ~"\"");

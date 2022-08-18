@@ -12,7 +12,7 @@ import vibe.data.bson;
 
 import rendermodule;
 import events;
-import guiinfo;
+import guimodule;
 import playermodule;
 import components;
 

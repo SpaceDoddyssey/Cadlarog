@@ -5,7 +5,7 @@ import events;
 import perf;
 import components;
 import components.complex;
-import guiinfo;
+import guimodule;
 import game;
 
 import std;
@@ -27,6 +27,7 @@ SDL_Rect healthRect;
 int maxHealthWidth = 150;
 TextBox hpReadout;
 SavePopup savePopup;
+LoadPopup loadPopup;
 
 ComponentCache!(Transform, SpriteRender) spriteDrawables;
 SDL_Texture*[string] textureCache;
@@ -134,13 +135,18 @@ void rendererInit(ref AppStartup s){
 
     curFont = TTF_OpenFont(fontPath.toStringz(), fontSize);
 
+    //Init saving popups
+    savePopup = SavePopup(true);
+    loadPopup = LoadPopup(true);
+
 /*
     healthRect.x = 200;
     healthRect.y = vpHeight - 29;
     healthRect.w = maxHealthWidth;
     healthRect.h = 26;
     
-    hpReadout = TextBox("");*/
+    hpReadout = TextBox("");
+*/
 }
 
 void appShutdown(ref FinishStruct f){
@@ -182,10 +188,6 @@ void renderLoop(ref LoopStruct l){
         SDL_RenderCopy(renderer, mess.texture, null, &dstrect);
     }
 
-    if(currentlySaving){
-        showSavePopup();
-    }
-
 //Render health bar
 /*    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 0);
     SDL_RenderDrawRect(renderer, &healthRect);
@@ -201,8 +203,19 @@ void renderLoop(ref LoopStruct l){
 }
 
 void showSavePopup(){
-    SDL_Rect dstrect = { vpWidth / 2, vpHeight / 2, savePopup.textWidth, savePopup.textHeight };
+    int w = savePopup.textWidth;
+    int h = savePopup.textHeight;
+    SDL_Rect dstrect = { vpWidth / 2 - w/2, vpHeight / 2 - h/2, w, h};
     SDL_RenderCopy(renderer, savePopup.texture, null, &dstrect);
+    SDL_RenderPresent(renderer);
+}
+
+void showLoadPopup(){
+    int w = loadPopup.textWidth;
+    int h = loadPopup.textHeight;
+    SDL_Rect dstrect = { vpWidth / 2 - w/2, vpHeight / 2 - h/2, w, h};
+    SDL_RenderCopy(renderer, loadPopup.texture, null, &dstrect);
+    SDL_RenderPresent(renderer);
 }
 
 void cameraMove(ref CameraMove m){
