@@ -10,10 +10,14 @@ import game;
 import levelmap;
 import rendermodule;
 import playermodule;
+import guimodule;
 
 void saveGameInfo(){
     gameData.cameraX = cameraXOffset;
     gameData.cameraY = cameraYOffset;
+    foreach(ref message; messages){
+        gameData.messages ~= message.message;
+    }
     Bson bson = serializeToBson(gameData);
     auto bytes = bson.data;
     string bsonName = "savedata/GameData.bson";

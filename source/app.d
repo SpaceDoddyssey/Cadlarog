@@ -51,7 +51,6 @@ void subscribeFunctions(){
     subscribe(&appShutdown);
     subscribe(&renderLoop);
     subscribe(&cameraMove);
-    //subscribe(&onEntityAttacked);
     subscribe(&registerComponents);
     subscribe(&pickUp);
     subscribe(&playerMove);

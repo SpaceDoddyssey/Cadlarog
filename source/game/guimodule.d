@@ -17,7 +17,8 @@ int fontSize = 16;
 string fontPath = "fonts/PressStart2P-Regular.ttf";
 
 enum numMessagesToRender = 7;
-RingBuffer!(TextBox, numMessagesToRender + 1) messages;
+RingBuffer!(TextBox, numMessagesToRender + 1) 
+    messages;
 
 SDL_Color white = { 0xFF, 0xFF, 0xFF, 0 };
 SDL_Color black = { 0x00, 0x00, 0x00, 0 };
@@ -27,6 +28,13 @@ SDL_Color green = { 0x00, 0xFF, 0x00, 0 };
 void addLogMessage(string mess){
     messages.push(TextBox(mess));
     if(messages.length > numMessagesToRender){ 
+        messages.pop;
+    }
+}
+
+void clearLog(){
+    int n = cast(int)messages.length;
+    for(int i = 0; i < n; i++){
         messages.pop;
     }
 }

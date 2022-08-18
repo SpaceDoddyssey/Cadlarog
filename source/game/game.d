@@ -30,6 +30,7 @@ struct GameInfo{
   int[] savedLevels;
   float cameraX; 
   float cameraY;
+  string[] messages;
   this(int i){ 
     curLevel = i; 
   }
@@ -59,6 +60,7 @@ void saveGame(){
 
 void loadGame(){
   showLoadPopup();
+  clearLog();
   if(player.valid){
     player.free();
   }
@@ -66,10 +68,13 @@ void loadGame(){
 
   loadGameInfo();
   uni = loadVerse(gameData.curLevel);
+  player = loadPlayerInfo();
+
+  foreach (mess; gameData.messages){
+    addLogMessage(mess);
+  }
 
   spriteDrawables = new typeof(spriteDrawables)(lm.verse);
-
-  player = loadPlayerInfo();
 
   foreach(ref Tile t; lm.tiles){
     t.ents.clear();
