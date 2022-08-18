@@ -92,7 +92,7 @@ struct Door{
 }
 
 struct Contents{
-    private Entity[] contents;
+    Entity[] contents;
     Entity ent; //the entity for the crate itself
     void onComponentDeserialized(Universe uni,EntityID owner,Bson bson){
         ent.subscribe(&die);
