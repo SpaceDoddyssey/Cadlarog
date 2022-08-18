@@ -12,6 +12,8 @@ struct CameraMove{ Dir dir; this(Dir d){ dir = d; } }
 struct PlayerMove{ Dir dir; this(Dir d){ dir = d; } }
 struct PickUp{}
 
+struct WalkedOnto{}
+
 struct NpcMove{
   Entity e;
   //vec2i v;
@@ -39,6 +41,7 @@ struct AttackEvent{
 }
 
 enum Dir{
+  None,
   Left,
   Right,
   Up,

@@ -78,9 +78,14 @@ void controlHandling(ref LoopStruct l){
 		if(isKeyPressed(SDLK_d, true))
 			publish(PlayerMove(Dir.Right));
 
+		if(isKeyPressed(SDLK_SPACE, true))
+			publish(PlayerMove(Dir.None));
+
 		//Player actions
 		if(isKeyPressed(SDLK_p, true))
 			publish(PickUp());
+		//if(isKeyPressed(SDLK_k, true))
+				
 	}
 	if(isKeyPressed(SDLK_F5, true))
 		saveGame();

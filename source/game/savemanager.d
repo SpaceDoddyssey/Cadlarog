@@ -8,9 +8,12 @@ import ecsd;
 import ecsd.userdata;
 import game;
 import levelmap;
+import rendermodule;
 import playermodule;
 
 void saveGameInfo(){
+    gameData.cameraX = cameraXOffset;
+    gameData.cameraY = cameraYOffset;
     Bson bson = serializeToBson(gameData);
     auto bytes = bson.data;
     string bsonName = "savedata/GameData.bson";
@@ -22,6 +25,8 @@ void loadGameInfo(){
     auto bytes = cast(immutable(ubyte)[])readBinary(bsonName);
     auto bson = Bson(Bson.Type.object, bytes);
     gameData = deserializeBson!GameInfo(bson);
+    cameraXOffset = gameData.cameraX;
+    cameraYOffset = gameData.cameraY;
 }
 
 void savePlayerInfo(){
@@ -34,7 +39,7 @@ void savePlayerInfo(){
 Entity loadPlayerInfo(){
     string bsonName = "savedata/Player.bson";
     auto bytes = cast(immutable(ubyte)[])readBinary(bsonName);
-    auto bson = Bson(Bson.Type.array, bytes);
+    auto bson = Bson(Bson.Type.object, bytes);
     Entity ent = uni.allocEntity();
     uni.deserializeEntity(ent, bson);
     return ent;

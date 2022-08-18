@@ -18,19 +18,18 @@ import components;
 
 struct HP{
     int curHP, maxHP, damRed = 0;
-    @ignore
     Entity ent;
     this(int h){
         curHP = maxHP = h;
     }
     void onComponentDeserialized(Universe uni,EntityID owner,Bson bson){
-        ent = Entity(owner);
-        writeln("\nEntity pubsub: ", ent.get!PubSub);
-        writeln("HP:", ent.get!HP);
+        ent.subscribe(&receiveAttack);
     }
     void onComponentAdded(Universe verse, EntityID id){
         ent = Entity(id);
-        (ent.get!PubSub).subscribe(&receiveAttack);
+        if(!verse.serializing){
+            ent.subscribe(&receiveAttack);
+        }
     }
     void takeDamage(int d){
         if (d > damRed) { curHP -= (d - damRed); } 
@@ -41,13 +40,12 @@ struct HP{
             } else {
                 addLogMessage("The " ~ *name ~ " is destroyed");
             }
-            (ent.get!PubSub).publish(DeathEvent());
+            ent.publish(DeathEvent());
             ent.free();
         }
         //Note: maybe should handle death better 
     }
     void receiveAttack(Entity e, ref AttackEvent atEv){
-        writeln("Hello");
         int damageDone = atEv.a.damage - damRed;
         if(damageDone < 0) { damageDone = 0; }
         if(atEv.source == player){
@@ -65,15 +63,17 @@ struct HP{
 struct Door{
     bool isOpen;
     string openSprite, closedSprite;
-    @ignore
     Entity ent;
     void onComponentDeserialized(Universe uni,EntityID owner,Bson bson){
-        ent = Entity(owner);
+        ent.subscribe(&doorOpen);
+        ent.subscribe(&doorClose);
     }
     void onComponentAdded(Universe verse, EntityID id){
         ent = Entity(id);
-        (ent.get!PubSub).subscribe(&doorOpen);
-        (ent.get!PubSub).subscribe(&doorClose);
+        if(!verse.serializing){
+            ent.subscribe(&doorOpen);
+            ent.subscribe(&doorClose);
+        }
     }
     void doorOpen(Entity e, ref OpenEvent o){
         if(!isOpen) { 
@@ -92,33 +92,34 @@ struct Door{
 }
 
 struct Contents{
-    Entity[] contents;
-    alias contents this;
-    @ignore
-    Entity ent;
+    private Entity[] contents;
+    Entity ent; //the entity for the crate itself
     void onComponentDeserialized(Universe uni,EntityID owner,Bson bson){
-        ent = Entity(owner);
-        (ent.get!PubSub).subscribe(&die);
+        ent.subscribe(&die);
     }
     void onComponentAdded(Universe verse, EntityID id){
         ent = Entity(id);
-        (ent.get!PubSub).subscribe(&die);
+        if(!verse.serializing){
+            ent.subscribe(&die);
+        }
     }
     void addContents(Entity e){
         if(e.has!SpriteRender){
             (e.get!SpriteRender()).enabled = false;
         }
-        if(e.has!MapPos){
+        /*if(e.has!MapPos){
+            writeln("stripping item of mapPos component");
             e.remove!MapPos;
-        }
+        }*/
         contents ~= e;
     }
     void die(Entity e, ref DeathEvent d){
+        if(contents.length > 0 && !contents[0].valid) return;
         MapPos* thisPos = ent.get!MapPos;
         foreach(Entity cont ; contents){
             (cont.get!SpriteRender()).enabled = true;
             vec2i pos = thisPos.position;
-            cont.add(MapPos(pos));
+            //cont.add(MapPos(pos));
             publish(PlaceEntity(cont, pos));
             addLogMessage("The crate dropped a " ~ *(cont.get!Name()) ~ "!");
         }

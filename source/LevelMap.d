@@ -3,6 +3,7 @@ module levelmap;
 import events;
 import app;
 import ecsd;
+import ecsd.events;
 import ecsd.userdata;
 import rendermodule;
 import entitycreation;
@@ -182,7 +183,7 @@ class LevelMap{
     private void roomGenPhase(Rect[] partitions, int numRooms){
         int[] alreadyUsed;
 
-        writeln("roomGenPhase\n");
+        //writeln("roomGenPhase");
         for(int p=0; p<partitions.length; p++) {
             Rect r = partitions[p];
             //writeln("   p=", p,
@@ -375,6 +376,11 @@ public struct Tile{
             //Worried about this not happening if I access things through other methods
         }
         return result;
+    }
+    void publish(T)(T event) {//if(__traits(compiles, { ent.publish!T; })) {
+        foreach(Entity ent; entsWith!PubSub()){
+            ent.publish(event);
+        }
     }
     void add(Entity ent){ ents.add(ent); }
     void remove(Entity ent){ ents.remove(ent); }

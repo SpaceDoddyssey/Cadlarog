@@ -2,6 +2,7 @@ module entitycreation;
 
 import ecsd;
 import ecsd.events;
+import ecsd.storage;
 import events;
 import rendermodule;
 import playermodule;
@@ -11,6 +12,7 @@ import components;
 import components.complex;
 import components.ai;
 import components.equipslots;
+import components.traps;
 
 import dplug.math.vector;
 import bindbc.sdl;
@@ -44,7 +46,8 @@ static Entity makeEntity(Universe verse, string s, string s2, int x, int y){
             ent.add(TileBlock());
             if(s2 != null){
                 Contents* c = ent.add(Contents());
-                c.addContents(makeEntity(verse, s2, null, x, y));
+                Entity e = makeEntity(verse, s2, null, x, y);
+                c.addContents(e);
             }
             ent.add(HP(3));
             ent.add(AttackBait());
@@ -124,9 +127,10 @@ static Entity makePlayer(Universe verse){
 
 void registerComponents(ref UniverseAllocated ev)
 {
+    ev.universe.registerBuiltinComponents;
     registerSimpleComponents(ev.universe);
     registerEquipComponents(ev.universe);
     registerAIComponents(ev.universe);
     registerComplexComponents(ev.universe);
-    ev.universe.registerBuiltinComponents;
+    registerTrapComponents(ev.universe);
 }

@@ -25,10 +25,17 @@ Universe uni;
 
 GameInfo gameData = void;
 
+bool currentlySaving = false;
+bool currentlyLoading = false;
+
 struct GameInfo{
   int curLevel;
   int[] savedLevels;
-  this(int i){ curLevel = i; }
+  float cameraX; 
+  float cameraY;
+  this(int i){ 
+    curLevel = i; 
+  }
 }
 
 void gameInit(ref AppStartup s){
@@ -43,6 +50,7 @@ void gameInit(ref AppStartup s){
 }
 
 void saveGame(){
+  currentlySaving = true;
   saveGameInfo();
 
   savePlayerInfo();
@@ -50,10 +58,14 @@ void saveGame(){
   
   saveVerse();
   player = loadPlayerInfo();
+  currentlySaving = false;
 }
 
 void loadGame(){
-  player.free();
+  currentlyLoading = true;
+  if(player.valid){
+    player.free();
+  }
   uni.freeUniverse();
 
   loadGameInfo();
@@ -72,6 +84,7 @@ void loadGame(){
   foreach(ent, ref pos; mapEnts){
     lm.getTile(pos).add(ent);
   }
+  currentlyLoading = false;
 }
 
 void pickUp(ref PickUp p){
@@ -109,6 +122,7 @@ void playerMove(ref PlayerMove m){
     vec2i source = vec2i(pMapPos.x, pMapPos.y);
     vec2i dest = vec2i(pMapPos.x + xDelta, pMapPos.y + yDelta);
     lm.moveEntity(player, source, dest);
+    target.publish(WalkedOnto());
   } else {
     if(blockingEnts.length != 0){ //Probably remove this once walls are blocking ents
       bumpInto(blockingEnts[0], player);

@@ -33,7 +33,6 @@ void addLogMessage(string mess){
 
 struct TextBox{
     string message;
-    bool initialized = false;
     int textWidth, textHeight;
     SDL_Texture * texture;
     this(string s){
@@ -41,7 +40,23 @@ struct TextBox{
         SDL_Surface* surface = TTF_RenderText_Shaded(curFont, message.toStringz(), white, black);
         texture = SDL_CreateTextureFromSurface(renderer, surface);
         SDL_QueryTexture(texture, null, null, &textWidth, &textHeight);
-        initialized = true;
+        SDL_FreeSurface(surface);
+    }
+    @disable this(this);
+    ~this(){
+        if(texture !is null) SDL_DestroyTexture(texture);
+    }
+}
+
+struct SavePopup{
+    int textWidth, textHeight;
+    SDL_Texture * texture;
+    this(bool garbage){
+        SDL_Surface* surface = TTF_RenderText_Shaded(curFont, "Saving", white, black);
+        texture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_QueryTexture(texture, null, null, &textWidth, &textHeight);
+        textWidth *= 2;
+        textHeight *= 2;
         SDL_FreeSurface(surface);
     }
     @disable this(this);

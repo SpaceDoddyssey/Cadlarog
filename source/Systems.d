@@ -12,7 +12,6 @@ import std.experimental.logger;
 //when you attempt to walk into it and something blocks you
 void bumpInto(Entity ent, Entity player){
     if(ent.has!AttackBait){
-        writeln("bumpInto: ", ent.get!PubSub, "    ", *(ent.get!PubSub));
         ent.publish(AttackEvent(player, ent, (player.get!PrimaryWeaponSlot).attack));
         return;
     }

@@ -6,6 +6,7 @@ import perf;
 import components;
 import components.complex;
 import guiinfo;
+import game;
 
 import std;
 import std.experimental.logger;
@@ -25,9 +26,13 @@ HP* playerHP;
 SDL_Rect healthRect;
 int maxHealthWidth = 150;
 TextBox hpReadout;
+SavePopup savePopup;
 
 ComponentCache!(Transform, SpriteRender) spriteDrawables;
 SDL_Texture*[string] textureCache;
+
+enum vpWidth = 1280;
+enum vpHeight = 720;
 
 enum SpriteLayer{
     Background = -1,
@@ -108,9 +113,6 @@ void rendererInit(ref AppStartup s){
     if(IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG)
         fatalf("failed to initialize SDL_Image: %s", SDL_GetError().fromStringz);
 
-    enum vpWidth = 1280;
-    enum vpHeight = 720;
-
     window = SDL_CreateWindow(
         "Cadlarog",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -131,7 +133,7 @@ void rendererInit(ref AppStartup s){
         fatalf("failed to initialize SDL_TTF: %s", SDL_GetError().fromStringz);
 
     curFont = TTF_OpenFont(fontPath.toStringz(), fontSize);
-    //if(curFont != null){ writeln("font loaded"); }
+
 /*
     healthRect.x = 200;
     healthRect.y = vpHeight - 29;
@@ -168,7 +170,7 @@ void renderLoop(ref LoopStruct l){
         };
         SDL_RenderCopy(
             renderer,
-            textureCache[sprite.path],
+            getTexture(sprite.pathString),
             null,
             &rect,
         );
@@ -176,15 +178,12 @@ void renderLoop(ref LoopStruct l){
 
 //Text rendering
     foreach(i, ref mess; messages){
-/*        if(!mess.initialized){
-            SDL_Surface* surface = TTF_RenderText_Shaded(curFont, mess.message.toStringz(), white, black);
-            mess.texture = SDL_CreateTextureFromSurface(renderer, surface);
-            SDL_QueryTexture(mess.texture, null, null, &mess.textWidth, &mess.textHeight);
-            mess.initialized = true;
-            SDL_FreeSurface(surface);
-        }*/
         SDL_Rect dstrect = { 4, 4 + cast(int)i*(mess.textHeight + 2), mess.textWidth, mess.textHeight };
         SDL_RenderCopy(renderer, mess.texture, null, &dstrect);
+    }
+
+    if(currentlySaving){
+        showSavePopup();
     }
 
 //Render health bar
@@ -199,6 +198,11 @@ void renderLoop(ref LoopStruct l){
     SDL_FreeSurface(surface);
 */
     SDL_RenderPresent(renderer);
+}
+
+void showSavePopup(){
+    SDL_Rect dstrect = { vpWidth / 2, vpHeight / 2, savePopup.textWidth, savePopup.textHeight };
+    SDL_RenderCopy(renderer, savePopup.texture, null, &dstrect);
 }
 
 void cameraMove(ref CameraMove m){
@@ -230,7 +234,6 @@ SDL_Texture* loadTextureFromImage(string path)
     import std.string: toStringz; // D's string type to char*
 
     auto surface = IMG_Load(path.toStringz());
-    writeln("Path = " ~ path);
     if(surface is null) fatalf(
 "Could not load texture at %s (SDL error: `%s`)", path, SDL_GetError().fromStringz);    scope(exit) SDL_FreeSurface(surface);
     if(surface is null){

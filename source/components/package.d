@@ -2,6 +2,7 @@ module components;
 
 import ecsd;
 import ecsd.events;
+import ecsd.storage;
 import ecsd.userdata;
 import dplug.math.vector;
 import vibe.data.bson;
@@ -46,7 +47,7 @@ struct Attack{
 
 void registerSimpleComponents(Universe verse)
 {
-    verse.registerComponent!Name;
+    verse.registerComponent!(Name, FlatStorage);
     verse.registerComponent!Transform;
     verse.registerComponent!MapPos;
     verse.registerComponent!AttackBait;
