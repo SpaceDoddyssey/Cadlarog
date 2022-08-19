@@ -125,25 +125,44 @@ class LevelMap{
     private Room placeEntInRandomRoom(string s, string s2){
         int whichRoom = cast(int)uniform(0, rooms.length, rand);
         Room r = rooms[whichRoom];
-        int entX = cast(int)uniform(r.rect.mins.x+1, r.rect.maxs.x, rand);
-        int entY = cast(int)uniform(r.rect.mins.y+1, r.rect.maxs.y, rand);
-        Entity pEnt = makeEntity(verse, s, s2, entX, entY);
-        //writeln("Spawning entity at ", entX, " ", entY );
-        getTile(entX, entY).add(pEnt);
-        if(s == "Player"){
-            cameraXOffset = entX - 15;
-            cameraYOffset = entY - 15;
+        int attempts = 0;
+        while(attempts < 1000){
+            int entX = cast(int)uniform(r.rect.mins.x+1, r.rect.maxs.x, rand);
+            int entY = cast(int)uniform(r.rect.mins.y+1, r.rect.maxs.y, rand);
+            Tile t = getTile(entX, entY);
+            if((t.entsWith!TileBlock).length > 0){
+                continue;
+            } else {
+                Entity pEnt = makeEntity(verse, s, s2, entX, entY);
+                //writeln("Spawning entity at ", entX, " ", entY );
+                getTile(entX, entY).add(pEnt);
+                if(s == "Player"){
+                    cameraXOffset = entX - 15;
+                    cameraYOffset = entY - 15;
+                }
+                break;
+            }
         }
         return r;
         //Expand -------------------------------
         //Make sure this doesn't place an object on a tile that's already full
     }
     private void placeEntInRoom(string s, string s2, Room r){
-        int entX = cast(int)uniform(r.rect.mins.x+1, r.rect.maxs.x, rand);
-        int entY = cast(int)uniform(r.rect.mins.y+1, r.rect.maxs.y, rand);
-        Entity pEnt = makeEntity(verse, s, s2, entX, entY);
-        //writeln("Spawning entity at ", entX, " ", entY );
-        getTile(entX, entY).add(pEnt);
+        int attempts = 0;
+        while(attempts < 1000){
+            attempts++;
+            int entX = cast(int)uniform(r.rect.mins.x+1, r.rect.maxs.x, rand);
+            int entY = cast(int)uniform(r.rect.mins.y+1, r.rect.maxs.y, rand);
+            Tile t = getTile(entX, entY);
+            if((t.entsWith!TileBlock).length > 0){
+                continue;
+            } else {
+                Entity pEnt = makeEntity(verse, s, s2, entX, entY);
+                getTile(entX, entY).add(pEnt);
+                return;
+            }
+        }
+        writeln("Entity failed to place!");
     }
     private Rect[] partitionPhase(int numPartitions){
         Rect[] partitions;
