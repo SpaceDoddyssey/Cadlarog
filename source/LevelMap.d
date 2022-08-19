@@ -31,11 +31,6 @@ LevelMap levelinit(int levelNum, Universe verse, int x, int y){
     return lm;
 }
 
-private LevelMap[Universe] levelMaps;
-LevelMap getMapForUniverse(Universe uni){
-    return levelMaps[uni];
-}
-
 void placeEntity(ref PlaceEntity p){
     Entity ent = p.e;
     vec2i tilePos = p.v;

@@ -16,6 +16,7 @@ import savemanager;
 
 import std.stdio;
 import std.random;
+import std.algorithm;
 import ecsd;
 import ecsd.userdata;
 import dplug.math.vector;
@@ -37,7 +38,7 @@ struct GameInfo{
 }
 
 void gameInit(ref AppStartup s){
-  gameData = GameInfo();
+  gameData = GameInfo(0);
   rand = Random(seed);
 
   uni = allocUniverse();
@@ -45,6 +46,31 @@ void gameInit(ref AppStartup s){
   levelinit(0, uni, 50, 50);
 
   addLogMessage("Welcome to Cadlarog");
+}
+
+void changeLevel(int dest){
+  showLoadPopup();
+
+  savePlayerInfo();
+  saveVerse();
+  
+  gameData.curLevel = dest;
+
+  if(gameData.savedLevels.canFind(dest)){
+    uni = loadVerse(dest);
+  } else {
+    gameData.savedLevels ~= dest;
+    
+    Universe uni2 = allocUniverse();
+    Entity newPlayerEnt = uni2.allocEntity();
+    uni.copyEntity(player, newPlayerEnt);
+    player = newPlayerEnt;
+
+    uni.freeUniverse();
+    uni = uni2;
+
+    levelinit(dest, uni, 50, 50);
+  }
 }
 
 void saveGame(){

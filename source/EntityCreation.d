@@ -107,7 +107,7 @@ static Entity makeEntity(Universe verse, string s, string s2, int x, int y){
             break;
         }
         case(""):{
-            
+
         }
         default:
             writeln("Invalid entity string \"" ~ s ~"\"");

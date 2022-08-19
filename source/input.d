@@ -85,7 +85,8 @@ void controlHandling(ref LoopStruct l){
 		if(isKeyPressed(SDLK_p, true))
 			publish(PickUp());
 		//if(isKeyPressed(SDLK_k, true))
-				
+		if(isKeyPressed(SDLK_l, true))
+			changeLevel(gameData.curLevel + 1);	
 	}
 	if(isKeyPressed(SDLK_F5, true))
 		saveGame();
