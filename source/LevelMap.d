@@ -24,7 +24,7 @@ import std.random;
 import std.algorithm.searching;
 
 LevelMap levelinit(int levelNum, Universe verse, int x, int y){ 
-    writeln("level init");
+    writeln("Initializing levelap ", levelNum);
     lm = new LevelMap(levelNum, verse, x, y);
     lm.populate();
     spriteDrawables = new typeof(spriteDrawables)(lm.verse);
@@ -71,25 +71,14 @@ class LevelMap{
             Rect[] partitions = partitionPhase(4);
             roomGenPhase(partitions, 11);
             foreach(Room r ; rooms){
-                while(!plumbLineToPath(r)){}
-                while(!plumbLineToPath(r)){}
+               while(!plumbLineToPath(r)){}
+               while(!plumbLineToPath(r)){}
             }
             cullDeadEnds();
             texturePhase();
         }
     ref Tile getTile(int x, int y) { return tiles[y * maxWidth + x]; }
     ref Tile getTile(vec2i pos) { return getTile(pos.v.tupleof); }
-    private void initialize(){
-        for(int x = 0; x < maxWidth; x++){
-            for(int y = 0; y < maxHeight; y++){
-                Tile T;
-                T.setPos(cast(int)(x*tileSize), cast(int)(y*tileSize));
-                T.mpos.x = x; T.mpos.y = y;
-                T.type = TileType.Wall;
-                getTile(x,y) = T;
-            }
-        }
-    }
     void populate(){
         Room r = placeEntInRandomRoom("Player", null);
         placeEntInRandomRoom("crate", "sword");
@@ -164,6 +153,18 @@ class LevelMap{
         }
         writeln("Entity failed to place!");
     }
+    private void initialize(){
+writeln("Populating ", maxWidth, " * ", maxHeight, " tiles");
+        for(int x = 0; x < maxWidth; x++){
+            for(int y = 0; y < maxHeight; y++){
+                Tile T;
+                T.setPos(cast(int)(x*tileSize), cast(int)(y*tileSize));
+                T.mpos.x = x; T.mpos.y = y;
+                T.type = TileType.Wall;
+                getTile(x,y) = T;
+            }
+        }
+    }
     private Rect[] partitionPhase(int numPartitions){
         Rect[] partitions;
         //The first "partition" is the entire map
@@ -171,16 +172,17 @@ class LevelMap{
         vec2i omega = vec2i(maxWidth-1, maxHeight-1);
         Rect wholeMap = Rect(alpha, omega);
         partitions ~= (wholeMap);
+//writeln("Partitioning ", numPartitions, " times");
         for(int i = 0; i < numPartitions; i++){
             Rect[] newPartitions;
-            if(i % 2 == 0){
+            if(i % 2 == 0){ //Vertical
                 foreach(ref Rect space; partitions){
                     newPartitions ~= (space.partitionVertical());
                     for(int y = space.mins.y; y <= space.maxs.y; y++){
                         getTile(space.maxs.x+1,y).type = TileType.Floor;
                     }
                 }
-            } else {
+            } else { //Horizontal
                 foreach(ref Rect space; partitions){
                     newPartitions ~= (space.partitionHorizontal());
                     for(int x = space.mins.x; x <= space.maxs.x; x++){
@@ -221,7 +223,7 @@ class LevelMap{
                 minX = cast(int)uniform(space.mins.x, space.maxs.x - minRoomWidth, rand);
             }           
             if(space.mins.y >= space.maxs.y - minRoomHeight){
-                minY = cast(int)space.mins.x;
+                minY = cast(int)space.mins.y;
             } else {
                 minY = cast(int)uniform(space.mins.y, space.maxs.y - minRoomHeight, rand);
             }
@@ -243,6 +245,9 @@ class LevelMap{
             Rect newRect = Rect(botLeft, topRight);
             rooms ~= Room(newRect);
         }
+//write("Placed rooms in partitions ");
+//foreach(int i ; alreadyUsed){ write(i, ","); }
+//writeln("");
         foreach(Room r; rooms){
             for(int x = r.rect.mins.x; x <= r.rect.maxs.x; x++){
                 for(int y = r.rect.mins.y; y <= r.rect.maxs.y; y++){
@@ -421,8 +426,11 @@ public struct Rect
     }
     //Cuts the rectangle in half with a one-block-thick vertical slice, making this Rect the left-hand rectangle and returning the right-hand rectangle
     public Rect partitionVertical(){    
-        int divisionPoint = uniform(mins.x + width()/3, maxs.x - width()/3, rand);
-        
+        int leftPoint = mins.x + width()/3;
+        int rightPoint = maxs.x - width()/3;
+        int divisionPoint = uniform(leftPoint, rightPoint, rand);
+//    writeln("Vertical partition between ", leftPoint, " and ", rightPoint, " at x = ", divisionPoint);
+    
         vec2i firstTop = vec2i(divisionPoint - 1, maxs.y);
 
         vec2i secondOrigin = vec2i(divisionPoint + 1, mins.y);
@@ -434,7 +442,10 @@ public struct Rect
     }
     //Cuts the rectangle in half with a one-block-thick horizontal slice, making this Rect the bottom rectangle and returning the top rectangle
     public Rect partitionHorizontal(){    
-        int divisionPoint = uniform(mins.y + height()/3, maxs.y - height()/3, rand);
+        int botPoint = mins.y + height()/3;
+        int topPoint = maxs.y - height()/3;
+        int divisionPoint = uniform(botPoint, topPoint, rand);
+//    writeln("Horizontal partition between ", botPoint, " and ", topPoint, " at y = ", divisionPoint);
 
         vec2i firstTop = vec2i(maxs.x, divisionPoint - 1);
 

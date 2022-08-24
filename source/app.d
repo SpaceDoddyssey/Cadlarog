@@ -31,7 +31,7 @@ void main()
 
     subscribeFunctions();
 
-    writeln("App starting");
+    writeln("App startup");
     init();
 /*    import std: array, sort, each;
 scope(exit) Perf
@@ -64,6 +64,7 @@ void onEntityAlloc(ref EntityAllocated ev) {
 
 void init(){
     publish!AppStartup;
+    writeln("--------------------------");
     loop();
     publish!FinishStruct;
 }
