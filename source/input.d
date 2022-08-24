@@ -5,6 +5,7 @@ import events;
 import levelmap;
 import playermodule;
 import game;
+import rendermodule;
 
 import bindbc.sdl;
 import dplug.math.vector;
@@ -65,6 +66,12 @@ void controlHandling(ref LoopStruct l){
         publish(CameraMove(Dir.Left)); 
     if(isKeyPressed(SDLK_RIGHT))
         publish(CameraMove(Dir.Right));
+	if(isKeyPressed(SDLK_MINUS, true))
+		zoomFactor++;
+	if(isKeyPressed(SDLK_EQUALS, true))
+		if(zoomFactor > 1){
+			zoomFactor--;
+		}
     
 	//Disabled if player is dead
 	if(player.valid){

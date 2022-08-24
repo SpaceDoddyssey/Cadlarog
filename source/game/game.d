@@ -38,6 +38,8 @@ struct GameInfo{
 }
 
 void gameInit(ref AppStartup s){
+  writeln("--------------------------");
+  writeln("Game init");
   gameData = GameInfo(0);
   rand = Random(seed);
 

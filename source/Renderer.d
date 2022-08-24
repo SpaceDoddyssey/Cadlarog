@@ -21,6 +21,7 @@ SDL_Window* window;
 SDL_Renderer* renderer;
 float cameraXOffset; 
 float cameraYOffset;
+float zoomFactor = 2.0;
 
 HP* playerHP;
 SDL_Rect healthRect;
@@ -169,10 +170,10 @@ void renderLoop(ref LoopStruct l){
     foreach(ent, ref transform, ref sprite; spriteDrawables){
         if(!sprite.enabled) continue;
         SDL_Rect rect = {
-            x: transform.position.x - cast(int)cameraXOffset * 32,
-            y: transform.position.y - cast(int)cameraYOffset * 32,
-            w: sprite.size.x,
-            h: sprite.size.y,
+            x: cast(int)((transform.position.x - cast(int)cameraXOffset * 32) / zoomFactor),
+            y: cast(int)((transform.position.y - cast(int)cameraYOffset * 32) / zoomFactor),
+            w: cast(int)(sprite.size.x / zoomFactor),
+            h: cast(int)(sprite.size.y / zoomFactor),
         };
         SDL_RenderCopy(
             renderer,
