@@ -24,7 +24,7 @@ import std.random;
 import std.algorithm.searching;
 
 LevelMap levelinit(int levelNum, Universe verse, int x, int y){ 
-    writeln("Initializing levelap ", levelNum);
+    writeln("----\nInitializing levelMap ", levelNum);
     lm = new LevelMap(levelNum, verse, x, y);
     lm.populate();
     spriteDrawables = new typeof(spriteDrawables)(lm.verse);
@@ -63,6 +63,7 @@ class LevelMap{
             levelNum = which;
             verse = uni;
             setUserdata!LevelMap(verse, this);
+            gameData.savedLevels ~= which;
 
             maxWidth = _x;
             maxHeight = _y;
@@ -70,6 +71,7 @@ class LevelMap{
             initialize();
             Rect[] partitions = partitionPhase(4);
             roomGenPhase(partitions, 11);
+            writeln("Connecting paths to rooms");
             foreach(Room r ; rooms){
                while(!plumbLineToPath(r)){}
                while(!plumbLineToPath(r)){}
@@ -80,6 +82,7 @@ class LevelMap{
     ref Tile getTile(int x, int y) { return tiles[y * maxWidth + x]; }
     ref Tile getTile(vec2i pos) { return getTile(pos.v.tupleof); }
     void populate(){
+        writeln("Populating entities");
         Room r = placeEntInRandomRoom("Player", null);
         placeEntInRandomRoom("crate", "sword");
         placeEntInRoom("crate", "sword", r);
@@ -134,7 +137,6 @@ class LevelMap{
         }
         return r;
         //Expand -------------------------------
-        //Make sure this doesn't place an object on a tile that's already full
     }
     private void placeEntInRoom(string s, string s2, Room r){
         int attempts = 0;
@@ -154,7 +156,7 @@ class LevelMap{
         writeln("Entity failed to place!");
     }
     private void initialize(){
-writeln("Populating ", maxWidth, " * ", maxHeight, " tiles");
+        writeln("Populating ", maxWidth, " * ", maxHeight, " tiles");
         for(int x = 0; x < maxWidth; x++){
             for(int y = 0; y < maxHeight; y++){
                 Tile T;
@@ -166,6 +168,7 @@ writeln("Populating ", maxWidth, " * ", maxHeight, " tiles");
         }
     }
     private Rect[] partitionPhase(int numPartitions){
+        writeln("Partitioning ", numPartitions, " times");
         Rect[] partitions;
         //The first "partition" is the entire map
         vec2i alpha = vec2i(0, 0);
@@ -245,9 +248,9 @@ writeln("Populating ", maxWidth, " * ", maxHeight, " tiles");
             Rect newRect = Rect(botLeft, topRight);
             rooms ~= Room(newRect);
         }
-//write("Placed rooms in partitions ");
-//foreach(int i ; alreadyUsed){ write(i, ","); }
-//writeln("");
+write("Placing rooms in partitions ");
+foreach(int i ; alreadyUsed){ write(i, " "); }
+writeln("");
         foreach(Room r; rooms){
             for(int x = r.rect.mins.x; x <= r.rect.maxs.x; x++){
                 for(int y = r.rect.mins.y; y <= r.rect.maxs.y; y++){
@@ -318,6 +321,7 @@ writeln("Populating ", maxWidth, " * ", maxHeight, " tiles");
         return true;
     }
     private void cullDeadEnds(){
+        writeln("Culling dead ends");
         for(int x = 1; x < maxWidth; x++){ //First check top and bottom
             if(getTile(x, 0).type == TileType.Floor){
                 int y = 0;

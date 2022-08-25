@@ -38,8 +38,7 @@ struct GameInfo{
 }
 
 void gameInit(ref AppStartup s){
-  writeln("--------------------------");
-  writeln("Game init");
+  writeln("-------------------------- Game Init");
   gameData = GameInfo(0);
   rand = Random(seed);
 
@@ -54,15 +53,23 @@ void changeLevel(int dest){
   showLoadPopup();
 
   savePlayerInfo();
+  player.free();
   saveVerse();
+  player = loadPlayerInfo();
   
   gameData.curLevel = dest;
 
   if(gameData.savedLevels.canFind(dest)){
-    uni = loadVerse(dest);
+    writeln("level found");
+    Universe uni2 = loadVerse(dest);
+    Entity newPlayerEnt = uni2.allocEntity();
+    uni.copyEntity(player, newPlayerEnt);
+    player = newPlayerEnt;
+
+    uni.freeUniverse();
+    uni = uni2;
+
   } else {
-    gameData.savedLevels ~= dest;
-    
     Universe uni2 = allocUniverse();
     Entity newPlayerEnt = uni2.allocEntity();
     uni.copyEntity(player, newPlayerEnt);
@@ -100,18 +107,6 @@ void loadGame(){
 
   foreach (mess; gameData.messages){
     addLogMessage(mess);
-  }
-
-  spriteDrawables = new typeof(spriteDrawables)(lm.verse);
-
-  foreach(ref Tile t; lm.tiles){
-    t.ents.clear();
-  }
-  ComponentCache!(MapPos) mapEnts;
-  mapEnts = new typeof(mapEnts)(lm.verse);
-  mapEnts.refresh();
-  foreach(ent, ref pos; mapEnts){
-    lm.getTile(pos).add(ent);
   }
 }
 

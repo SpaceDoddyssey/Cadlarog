@@ -64,7 +64,7 @@ void onEntityAlloc(ref EntityAllocated ev) {
 
 void init(){
     publish!AppStartup;
-    writeln("--------------------------");
+    writeln("finished setup");
     loop();
     publish!FinishStruct;
 }

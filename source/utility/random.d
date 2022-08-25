@@ -1,5 +1,5 @@
 module randommodule;
 import std.random;
 
-static int seed = 1425;
+static int seed = 0;
 Random rand;

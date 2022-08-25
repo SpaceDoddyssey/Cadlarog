@@ -38,7 +38,9 @@ static Entity makeEntity(Universe verse, string s, string s2, int x, int y){
             ent.add(Door(false, "sprites/door_open.png", "sprites/door_closed.png"));
             ent.add(TileBlock());
             ent.add(Wood());
-            ent.add(Name(s));
+try {
+                ent.add(Name(s));
+} catch(Throwable e) { writeln(*(ent.get!Name)); throw e; }
             break;
         }
         case("crate"):{

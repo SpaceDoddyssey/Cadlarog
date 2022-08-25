@@ -21,7 +21,7 @@ SDL_Window* window;
 SDL_Renderer* renderer;
 float cameraXOffset; 
 float cameraYOffset;
-float zoomFactor = 2.0;
+float zoomFactor = 1.0;
 
 HP* playerHP;
 SDL_Rect healthRect;

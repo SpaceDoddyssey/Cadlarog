@@ -9,7 +9,7 @@ import vibe.data.bson;
 
 import levelmap;
 
-struct Name{ string name; alias name this; }
+struct Name{ string name = "<unnamed>"; alias name this; }
 
 struct Transform{ vec2i position; alias position this; }
 struct MapPos{ 

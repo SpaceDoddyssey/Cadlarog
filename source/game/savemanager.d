@@ -11,6 +11,7 @@ import levelmap;
 import rendermodule;
 import playermodule;
 import guimodule;
+import components;
 
 void saveGameInfo(){
     gameData.cameraX = cameraXOffset;
@@ -75,6 +76,18 @@ Universe loadVerse(int whichLevel){
     auto bytes = cast(immutable(ubyte)[])readBinary(bsonName);
     auto bson = Bson(Bson.Type.array, bytes);
     verse.deserialize(bson); // allocates and populates new entities
+
+    spriteDrawables = new typeof(spriteDrawables)(verse);
+
+    foreach(ref Tile t; lm.tiles){
+        t.ents.clear();
+    }
+    ComponentCache!(MapPos) mapEnts;
+    mapEnts = new typeof(mapEnts)(verse);
+    mapEnts.refresh();
+    foreach(ent, ref pos; mapEnts){
+        lm.getTile(pos).add(ent);
+    }
     return verse;
 }
 
