@@ -43,7 +43,7 @@ void gameInit(ref AppStartup s){
   rand = Random(seed);
 
   uni = allocUniverse();
-  player = makePlayer(uni);
+  player = spawnNewPlayer(uni);
   levelinit(0, uni, 50, 50);
 
   addLogMessage("Welcome to Cadlarog");

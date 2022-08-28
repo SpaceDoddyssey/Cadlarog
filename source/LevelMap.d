@@ -36,12 +36,19 @@ void placeEntity(ref PlaceEntity p){
     Entity ent = p.e;
     vec2i tilePos = p.v;
     auto level = ent.universe.getUserdata!LevelMap;
-    if(auto pos = ent.tryGet!MapPos) {
+    
+    if(auto pos = ent.tryGet!MapPos){
         Tile t = level.getTile(pos.position);
         t.ents.remove(ent);
         pos.position = tilePos;
     } else {
         ent.add(MapPos(tilePos));
+    }
+
+    if(auto pos = ent.tryGet!Transform){
+        pos.position = vec2i(tilePos.x*32, tilePos.y*32);
+    } else {
+        ent.add(Transform(vec2i(tilePos.x*32, tilePos.y*32)));
     }
     level.getTile(tilePos).ents.add(ent);
 }
@@ -112,12 +119,14 @@ class LevelMap{
             if((t.entsWith!TileBlock).length > 0){
                 continue;
             } else {
-                Entity pEnt = makeEntity(verse, s, s2, randVec.x, randVec.y);
+                Entity pEnt = (s == "Player") ? player : makeEntity(verse, s, s2);
+                publish(PlaceEntity(pEnt, randVec));
+
                 //writeln("Spawning entity at ", entX, " ", entY );
                 getTile(randVec).add(pEnt);
                 if(s == "Player"){
                     cameraXOffset = randVec.x - 15;
-                    cameraYOffset = randVec.x - 15;
+                    cameraYOffset = randVec.y - 15;
                 }
                 break;
             }
@@ -134,7 +143,8 @@ class LevelMap{
             if((t.entsWith!TileBlock).length > 0){
                 continue;
             } else {
-                Entity pEnt = makeEntity(verse, s, s2, randVec.x, randVec.y);
+                Entity pEnt = makeEntity(verse, s, s2);
+                publish(PlaceEntity(pEnt, randVec));
                 getTile(randVec).add(pEnt);
                 return;
             }
@@ -142,7 +152,7 @@ class LevelMap{
         writeln("Entity failed to place!");
     }
 }
-
+//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 public struct Tile{
     Transform pos;
     MapPos mpos;
@@ -179,13 +189,13 @@ public struct Tile{
     void add(Entity ent){ ents.add(ent); }
     void remove(Entity ent){ ents.remove(ent); }
 }
-
+//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 enum TileType{
     Wall,
     Floor,
     RoomBorder
 }
-
+//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 public struct Rect
 {
     public vec2i mins, maxs;
@@ -237,7 +247,7 @@ public struct Rect
         return vec2i(resultX, resultY);
     }
 }
-
+//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 public struct Room 
 {
     public Rect rect;

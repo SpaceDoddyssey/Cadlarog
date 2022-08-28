@@ -20,17 +20,10 @@ import bindbc.sdl.image;
 import std.stdio;
 import std.conv;
 
-static Entity makeEntity(Universe verse, string s, string s2, int x, int y){
-    if(s == "Player"){
-        MapPos* mp = player.get!MapPos;
-        mp.position = vec2i(x, y);
-        Transform* t = player.get!Transform;
-        t.position = vec2i(x*32, y*32);
-            return player;
-    }
+static Entity makeEntity(Universe verse, string s, string s2){
     Entity ent = Entity(verse.allocEntity);
-    ent.add(Transform(vec2i(x*32, y*32)));
-    ent.add(MapPos(vec2i(x, y)));
+    ent.add(Transform(vec2i(0, 0)));
+    ent.add(MapPos(vec2i(0, 0)));
     switch(s){
         case("Tile"):{ return ent; }
         case("door"):{
@@ -38,9 +31,7 @@ static Entity makeEntity(Universe verse, string s, string s2, int x, int y){
             ent.add(Door(false, "sprites/door_open.png", "sprites/door_closed.png"));
             ent.add(TileBlock());
             ent.add(Wood());
-try {
-                ent.add(Name(s));
-} catch(Throwable e) { writeln(*(ent.get!Name)); throw e; }
+            ent.add(Name(s));
             break;
         }
         case("crate"):{
@@ -48,7 +39,7 @@ try {
             ent.add(TileBlock());
             if(s2 != null){
                 Contents* c = ent.add(Contents());
-                Entity e = makeEntity(verse, s2, null, x, y);
+                Entity e = makeEntity(verse, s2, null);
                 c.addContents(e);
             }
             ent.add(HP(3));
@@ -119,7 +110,7 @@ try {
     return ent;
 }
 
-static Entity makePlayer(Universe verse){
+static Entity spawnNewPlayer(Universe verse){
     Entity ent = Entity(verse.allocEntity);
     ent.add(Name("Hero"));
     ent.add(SpriteRender("sprites/playerChar.png", vec2i(32, 32), SpriteLayer.Character));

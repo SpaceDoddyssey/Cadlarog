@@ -4,6 +4,7 @@ import ecsd;
 import components;
 import components.complex; 
 
+import events;
 import levelmap;
 import entitycreation;
 import std.stdio;
@@ -175,7 +176,8 @@ bool plumbLineToPath(LevelMap lev, Room room){
     }
 
     //now place a door there
-    Entity door = makeEntity(lev.verse, "door", null, xPos, yPos);
+    Entity door = makeEntity(lev.verse, "door", null);
+    publish(PlaceEntity(door, vec2i(xPos, yPos)));
     lev.getTile(xPos, yPos).add(door);
 
     return true;
@@ -243,7 +245,8 @@ void texturePhase(LevelMap lev){
             default:
                 target = "sprites/Empty.png"; break;
         }
-        t.tileEnt = makeEntity(lev.verse, "Tile", null, t.pos.position.x, t.pos.position.y);
+        t.tileEnt = makeEntity(lev.verse, "Tile", null);
+        publish(PlaceEntity(t.tileEnt, t.pos.position));
         t.tileEnt.add(SpriteRender(target, vec2i(32, 32), SpriteLayer.Floor));
     }
 }
