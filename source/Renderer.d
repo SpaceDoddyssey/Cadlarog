@@ -249,7 +249,8 @@ SDL_Texture* loadTextureFromImage(string path)
 
     auto surface = IMG_Load(path.toStringz());
     if(surface is null) fatalf(
-"Could not load texture at %s (SDL error: `%s`)", path, SDL_GetError().fromStringz);    scope(exit) SDL_FreeSurface(surface);
+"Could not load texture at %s (SDL error: `%s`)", path, SDL_GetError().fromStringz);    
+scope(exit) SDL_FreeSurface(surface);
     if(surface is null){
 
         surface = IMG_Load("sprites/Empty.png");

@@ -12,6 +12,8 @@ import dplug.math.vector;
 import randommodule;
 import std.random;
 import std.algorithm.searching;
+import game;
+import playermodule;
 
 static void initialize(LevelMap lev){
     writeln("Populating ", lev.maxWidth, " * ", lev.maxHeight, " tiles");
@@ -221,15 +223,16 @@ static void cullDeadEnds(LevelMap lev){
 
 static void populate(LevelMap lev){
     writeln("Populating entities");
-    Room r = lev.placeEntInRandomRoom("Player", null);
-    lev.placeEntInRandomRoom("crate", "sword");
+    Room r = lev.getRandomRoom();
+    lev.placeEntInRoom(player, r);
     lev.placeEntInRoom("crate", "sword", r);
+    lev.placeEntInRoom("crate", "sword", lev.getRandomRoom());
     lev.placeEntInRoom("crate", "shield", r);
     lev.placeEntInRoom("slime_purple", null, r);
     lev.placeEntInRoom("slime_green", null, r);
-    lev.placeEntInRandomRoom("stairs_down", null);
+    lev.placeEntInRoom("stairs_down", null, lev.getRandomRoom());
     if(lev.levelNum != 0){
-        lev.placeEntInRandomRoom("stairs_up", null);
+        lev.placeEntInRoom("stairs_up", null, r);
     }
 }
 

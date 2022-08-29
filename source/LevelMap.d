@@ -76,6 +76,7 @@ class LevelMap{
             maxWidth = _x;
             maxHeight = _y;
             tiles = new Tile[_x * _y];
+
             initialize(this);
             Rect[] partitions = partitionPhase(this, 4);
             roomGenPhase(this, partitions, 11);
@@ -89,6 +90,10 @@ class LevelMap{
         }
     ref Tile getTile(int x, int y) { return tiles[y * maxWidth + x]; }
     ref Tile getTile(vec2i pos) { return getTile(pos.v.tupleof); }
+    ref Room getRandomRoom(){
+        int whichRoom = cast(int)uniform(0, rooms.length, rand);
+        return rooms[whichRoom];
+    }
     void lookForEnts(){ //debug function
         foreach(Tile t ; tiles){
             if(t.ents.length() != 0){
@@ -109,32 +114,11 @@ class LevelMap{
         getTile(source).remove(e);
         getTile(dest).add(e);
     }
-    Room placeEntInRandomRoom(string s, string s2){
-        int whichRoom = cast(int)uniform(0, rooms.length, rand);
-        Room r = rooms[whichRoom];
-        int attempts = 0;
-        while(attempts < 1000){
-            vec2i randVec = r.randPointIn();
-            Tile t = getTile(randVec);
-            if((t.entsWith!TileBlock).length > 0){
-                continue;
-            } else {
-                Entity pEnt = (s == "Player") ? player : makeEntity(verse, s, s2);
-                publish(PlaceEntity(pEnt, randVec));
-
-                //writeln("Spawning entity at ", entX, " ", entY );
-                getTile(randVec).add(pEnt);
-                if(s == "Player"){
-                    cameraXOffset = randVec.x - 15;
-                    cameraYOffset = randVec.y - 15;
-                }
-                break;
-            }
-        }
-        return r;
-        //Expand -------------------------------
+    void placeEntInRoom(string s1, string s2, Room r){
+        Entity ent = makeEntity(verse, s1, s2);
+        placeEntInRoom(ent, r);
     }
-    void placeEntInRoom(string s, string s2, Room r){
+    void placeEntInRoom(Entity ent, Room r){
         int attempts = 0;
         while(attempts < 1000){
             attempts++;
@@ -143,9 +127,12 @@ class LevelMap{
             if((t.entsWith!TileBlock).length > 0){
                 continue;
             } else {
-                Entity pEnt = makeEntity(verse, s, s2);
-                publish(PlaceEntity(pEnt, randVec));
-                getTile(randVec).add(pEnt);
+                publish(PlaceEntity(ent, randVec));
+                getTile(randVec).add(ent);
+                if(ent == player){
+                       cameraXOffset = randVec.x - 15;
+                       cameraYOffset = randVec.y - 15;
+                }
                 return;
             }
         }
