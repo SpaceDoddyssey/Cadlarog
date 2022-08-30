@@ -74,7 +74,7 @@ void roomGenPhase(LevelMap lev, Rect[] partitions, int numRooms){
     }
 
     for(int i = 0; i < numRooms && i < partitions.length; i++){
-        int nextIndex = cast(int)uniform(0, partitions.length, rand);
+        int nextIndex = cast(int)uniform(0, partitions.length, levelGenRand);
         if(canFind(alreadyUsed, nextIndex)){
             i--;
             continue;
@@ -86,12 +86,12 @@ void roomGenPhase(LevelMap lev, Rect[] partitions, int numRooms){
         if(space.mins.x >= space.maxs.x - lev.minRoomWidth){
             minX = cast(int)space.mins.x;
         } else {
-            minX = cast(int)uniform(space.mins.x, space.maxs.x - lev.minRoomWidth, rand);
+            minX = cast(int)uniform(space.mins.x, space.maxs.x - lev.minRoomWidth, levelGenRand);
         }           
         if(space.mins.y >= space.maxs.y - lev.minRoomHeight){
             minY = cast(int)space.mins.y;
         } else {
-            minY = cast(int)uniform(space.mins.y, space.maxs.y - lev.minRoomHeight, rand);
+            minY = cast(int)uniform(space.mins.y, space.maxs.y - lev.minRoomHeight, levelGenRand);
         }
         vec2i botLeft = vec2i(minX, minY);
 
@@ -99,12 +99,12 @@ void roomGenPhase(LevelMap lev, Rect[] partitions, int numRooms){
         if(minX + lev.minRoomWidth >= space.maxs.x){
             topX = space.maxs.x;
         } else {
-            topX = cast(int)uniform(minX + lev.minRoomWidth, space.maxs.x, rand);
+            topX = cast(int)uniform(minX + lev.minRoomWidth, space.maxs.x, levelGenRand);
         }
         if(minY + lev.minRoomHeight >= space.maxs.y){
             topY = space.maxs.y;
         } else {
-            topY = cast(int)uniform(minY + lev.minRoomHeight, space.maxs.y, rand);
+            topY = cast(int)uniform(minY + lev.minRoomHeight, space.maxs.y, levelGenRand);
         }
         vec2i topRight = vec2i(topX, topY);
 
@@ -128,11 +128,11 @@ writeln("");
     }
 }
 bool plumbLineToPath(LevelMap lev, Room room){
-    int side = uniform(0, 4, rand);
+    int side = uniform(0, 4, levelGenRand);
     int xPos, yPos; //Position of the door to be placed
     int xWalkDelta, yWalkDelta; //How much to offset each of these values (-1, 0, or 1) each step depending on what dir we're walking
     if(side <= 1){ //up-down
-        xPos = uniform(room.rect.mins.x+1, room.rect.maxs.x, rand);
+        xPos = uniform(room.rect.mins.x+1, room.rect.maxs.x, levelGenRand);
         xWalkDelta = 0;
         if(side == 0){ //up
             yPos = room.rect.maxs.y;
@@ -142,7 +142,7 @@ bool plumbLineToPath(LevelMap lev, Room room){
             yWalkDelta = -1;
         }
     } else { //left-right
-        yPos = uniform(room.rect.mins.y+1, room.rect.maxs.y, rand);
+        yPos = uniform(room.rect.mins.y+1, room.rect.maxs.y, levelGenRand);
         yWalkDelta = 0;
         if(side == 3){ //left
             xPos = room.rect.mins.x;

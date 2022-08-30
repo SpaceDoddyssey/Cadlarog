@@ -40,7 +40,8 @@ struct GameInfo{
 void gameInit(ref AppStartup s){
   writeln("-------------------------- Game Init");
   gameData = GameInfo(0);
-  rand = Random(seed);
+  levelGenRand = Random(seed);
+  aiRand = Random(seed);
 
   uni = allocUniverse();
   player = spawnNewPlayer(uni);

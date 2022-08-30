@@ -25,9 +25,10 @@ import std.random;
 import std.algorithm.searching;
 
 LevelMap levelinit(int levelNum, Universe verse, int x, int y){ 
-    writeln("----\nInitializing levelMap ", levelNum);
+    writeln("Initializing levelMap ", levelNum);
     lm = new LevelMap(levelNum, verse, x, y);
     lm.populate();
+    writeln("----------");
     spriteDrawables = new typeof(spriteDrawables)(lm.verse);
     return lm;
 }
@@ -91,7 +92,7 @@ class LevelMap{
     ref Tile getTile(int x, int y) { return tiles[y * maxWidth + x]; }
     ref Tile getTile(vec2i pos) { return getTile(pos.v.tupleof); }
     ref Room getRandomRoom(){
-        int whichRoom = cast(int)uniform(0, rooms.length, rand);
+        int whichRoom = cast(int)uniform(0, rooms.length, levelGenRand);
         return rooms[whichRoom];
     }
     void lookForEnts(){ //debug function
@@ -200,7 +201,7 @@ public struct Rect
     public Rect partitionVertical(){    
         int leftPoint = mins.x + width()/3;
         int rightPoint = maxs.x - width()/3;
-        int divisionPoint = uniform(leftPoint, rightPoint, rand);
+        int divisionPoint = uniform(leftPoint, rightPoint, levelGenRand);
 //    writeln("Vertical partition between ", leftPoint, " and ", rightPoint, " at x = ", divisionPoint);
     
         vec2i firstTop = vec2i(divisionPoint - 1, maxs.y);
@@ -216,7 +217,7 @@ public struct Rect
     public Rect partitionHorizontal(){    
         int botPoint = mins.y + height()/3;
         int topPoint = maxs.y - height()/3;
-        int divisionPoint = uniform(botPoint, topPoint, rand);
+        int divisionPoint = uniform(botPoint, topPoint, levelGenRand);
 //    writeln("Horizontal partition between ", botPoint, " and ", topPoint, " at y = ", divisionPoint);
 
         vec2i firstTop = vec2i(maxs.x, divisionPoint - 1);
@@ -229,8 +230,8 @@ public struct Rect
         return top;
     }
     public vec2i randPointIn(){
-        int resultX = cast(int)uniform(mins.x+1, maxs.x, rand);
-        int resultY = cast(int)uniform(mins.y+1, maxs.y, rand);
+        int resultX = cast(int)uniform(mins.x+1, maxs.x, levelGenRand);
+        int resultY = cast(int)uniform(mins.y+1, maxs.y, levelGenRand);
         return vec2i(resultX, resultY);
     }
 }

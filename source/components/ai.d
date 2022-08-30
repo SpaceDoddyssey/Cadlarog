@@ -26,7 +26,7 @@ struct AISlimePurple{
         ent = Entity(id);
         lm = ent.universe.getUserdata!LevelMap;
         if(!verse.serializing) mp = ent.get!MapPos;
-        curDir = cast(Dir)uniform(2, 4);
+        curDir = cast(Dir)uniform(2, 4, aiRand);
         subscribe(&onTick);
     }
     import vibe.data.bson;
@@ -92,8 +92,8 @@ struct AISlimeGreen{
     void onTick(ref TurnTick t){
         int xDelta = 0, yDelta = 0;
         while(xDelta == 0 && yDelta == 0){
-            xDelta = uniform(-1, 2, rand);
-            yDelta = uniform(-1, 2, rand);
+            xDelta = uniform(-1, 2, aiRand);
+            yDelta = uniform(-1, 2, aiRand);
         }
 
         Tile target = lm.getTile(mp.x + xDelta, mp.y + yDelta);
