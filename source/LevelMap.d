@@ -27,7 +27,7 @@ import std.algorithm.searching;
 LevelMap levelinit(int levelNum, Universe verse, int x, int y){ 
     writeln("Initializing levelMap ", levelNum);
     lm = new LevelMap(levelNum, verse, x, y);
-    lm.populate();
+    populate();
     writeln("----------");
     spriteDrawables = new typeof(spriteDrawables)(lm.verse);
     return lm;
@@ -65,6 +65,7 @@ class LevelMap{
         int minRoomWidth = 5, minRoomHeight = 5;
         @ignore
         int maxRoomWidth = 8, maxRoomHeight = 8;
+        vec2i stairsUpLoc, stairsDownLoc;
         Tile[] tiles;
         Room[] rooms;
         this() @safe {}
@@ -130,10 +131,6 @@ class LevelMap{
             } else {
                 publish(PlaceEntity(ent, randVec));
                 getTile(randVec).add(ent);
-                if(ent == player){
-                       cameraXOffset = randVec.x - 15;
-                       cameraYOffset = randVec.y - 15;
-                }
                 return;
             }
         }

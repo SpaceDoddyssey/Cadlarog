@@ -58,6 +58,7 @@ void changeLevel(int dest){
   saveVerse();
   player = loadPlayerInfo();
   
+  int curLevel = gameData.curLevel;
   gameData.curLevel = dest;
 
   if(gameData.savedLevels.canFind(dest)){
@@ -80,6 +81,16 @@ void changeLevel(int dest){
     uni = uni2;
 
     levelinit(dest, uni, 50, 50);
+  }
+
+  if(curLevel < dest){
+    publish(PlaceEntity(player, lm.stairsUpLoc));
+    cameraXOffset = lm.stairsUpLoc.x - 15;
+    cameraYOffset = lm.stairsUpLoc.y - 15;
+  } else {
+    publish(PlaceEntity(player, lm.stairsDownLoc));
+    cameraXOffset = lm.stairsDownLoc.x - 15;
+    cameraYOffset = lm.stairsDownLoc.y - 15;
   }
 }
 

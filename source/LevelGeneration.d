@@ -14,6 +14,7 @@ import std.random;
 import std.algorithm.searching;
 import game;
 import playermodule;
+import rendermodule;
 
 static void initialize(LevelMap lev){
     writeln("Populating ", lev.maxWidth, " * ", lev.maxHeight, " tiles");
@@ -221,18 +222,34 @@ static void cullDeadEnds(LevelMap lev){
     }
 }
 
-static void populate(LevelMap lev){
+static void populate(){
     writeln("Populating entities");
-    Room r = lev.getRandomRoom();
-    lev.placeEntInRoom(player, r);
-    lev.placeEntInRoom("crate", "sword", r);
-    lev.placeEntInRoom("crate", "sword", lev.getRandomRoom());
-    lev.placeEntInRoom("crate", "shield", r);
-    lev.placeEntInRoom("slime_purple", null, r);
-    lev.placeEntInRoom("slime_green", null, r);
-    lev.placeEntInRoom("stairs_down", null, lev.getRandomRoom());
-    if(lev.levelNum != 0){
-        lev.placeEntInRoom("stairs_up", null, r);
+    //Populate 'primary' room
+    Room spawnRoom = lm.getRandomRoom();
+    lm.placeEntInRoom("crate", "sword", spawnRoom);
+    lm.placeEntInRoom("crate", "shield", spawnRoom);
+    lm.placeEntInRoom("slime_purple", null, spawnRoom);
+    lm.placeEntInRoom("slime_green", null, spawnRoom);
+
+    lm.placeEntInRoom("crate", "sword", lm.getRandomRoom());
+    //Place down stairs
+    Room r = lm.getRandomRoom();
+    vec2i stairsLoc = r.randPointIn();
+    Entity downStairs = makeEntity(uni, "stairs_down", null);
+    publish(PlaceEntity(downStairs, stairsLoc));
+    lm.stairsDownLoc = stairsLoc;
+    //Place up stairs
+    if(lm.levelNum != 0){
+        r = lm.getRandomRoom();
+        stairsLoc = r.randPointIn();
+        Entity upStairs = makeEntity(uni, "stairs_up", null);
+        publish(PlaceEntity(upStairs, stairsLoc));
+        lm.stairsUpLoc = stairsLoc;
+    } else {
+        lm.placeEntInRoom(player, spawnRoom);
+        MapPos* mp = player.get!MapPos();
+        cameraXOffset = mp.x - 15;
+        cameraYOffset = mp.y - 15;
     }
 }
 
