@@ -1,19 +1,20 @@
 module levelgen;
 
-import ecsd;
-import components;
-import components.complex; 
-
-import events;
-import levelmap;
-import entitycreation;
-import std.stdio;
 import dplug.math.vector;
-import randommodule;
-import std.random;
 import std.algorithm.searching;
+import std.random;
+import std.stdio;
+
+import ecsd;
+
+import components;
+import components.complex;
+import entitycreation;
+import events;
 import game;
+import levelmap;
 import playermodule;
+import randommodule;
 import rendermodule;
 
 static void initialize(LevelMap lev){

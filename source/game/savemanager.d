@@ -1,17 +1,17 @@
 module savemanager;
 
-import std.file: writeBinary = write, readBinary = read;
-import vibe.data.bson;
 import std.conv;
+import std.file : readBinary = read, writeBinary = write;
+import vibe.data.bson;
 
+import components;
 import ecsd;
 import ecsd.userdata;
 import game;
-import levelmap;
-import rendermodule;
-import playermodule;
 import guimodule;
-import components;
+import levelmap;
+import playermodule;
+import rendermodule;
 
 void saveGameInfo(){
     gameData.cameraX = cameraXOffset;

@@ -1,21 +1,21 @@
 module rendermodule;
 
-import ecsd;
-import events;
-import perf;
 import components;
 import components.complex;
-import guimodule;
+import ecsd;
+import events;
 import game;
+import guimodule;
+import perf;
 
-import std;
-import std.experimental.logger;
-import dplug.math.vector;
 import bindbc.sdl;
 import bindbc.sdl.image;
 import bindbc.sdl.ttf;
-import std.stdio;
+import dplug.math.vector;
+import std;
 import std.conv;
+import std.experimental.logger;
+import std.stdio;
 
 SDL_Window* window;
 SDL_Renderer* renderer;

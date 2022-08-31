@@ -1,21 +1,21 @@
 module app;
 
-import events;
 import app;
+import components;
+import components.complex;
 import ecsd;
 import ecsd.events;
 import ecsd.userdata;
-import game;
-import rendermodule;
 import entitycreation;
-import perf;
+import events;
+import game;
 import input;
-import components;
-import components.complex;
-import playermodule;
-import set;
-import randommodule;
 import levelmap;
+import perf;
+import playermodule;
+import randommodule;
+import rendermodule;
+import set;
 
 import std;
 import std.experimental.logger;

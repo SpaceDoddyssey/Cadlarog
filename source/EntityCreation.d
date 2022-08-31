@@ -1,24 +1,25 @@
 module entitycreation;
 
+import bindbc.sdl;
+import bindbc.sdl.image;
+import dplug.math.vector;
+import std.conv;
+import std.stdio;
+
 import ecsd;
 import ecsd.events;
 import ecsd.storage;
+
 import events;
-import rendermodule;
-import playermodule;
 import guimodule;
+import playermodule;
+import rendermodule;
 
 import components;
-import components.complex;
 import components.ai;
+import components.complex;
 import components.equipslots;
 import components.traps;
-
-import dplug.math.vector;
-import bindbc.sdl;
-import bindbc.sdl.image;
-import std.stdio;
-import std.conv;
 
 static Entity makeEntity(Universe verse, string s, string s2){
     Entity ent = Entity(verse.allocEntity);

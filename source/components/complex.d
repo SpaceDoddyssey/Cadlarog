@@ -3,12 +3,12 @@ module components.complex;
 import dplug.math.vector;
 import ecsd;
 import ecsd.events;
+import std.conv;
+import std.random;
 import std.stdio;
 import std.typecons;
-import std.random;
-import std.conv;
-import vibe.data.serialization;
 import vibe.data.bson;
+import vibe.data.serialization;
 
 import rendermodule;
 import events;

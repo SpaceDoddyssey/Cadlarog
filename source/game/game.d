@@ -1,25 +1,25 @@
 module game;
 
-import levelmap;
-import events;
 import components;
+import components.ai;
 import components.complex;
 import components.equipslots;
-import systems;
-import rendermodule;
-import playermodule;
-import components.ai;
 import entitycreation;
+import events;
 import guimodule;
+import levelmap;
+import playermodule;
 import randommodule;
+import rendermodule;
 import savemanager;
+import systems;
 
-import std.stdio;
-import std.random;
-import std.algorithm;
+import dplug.math.vector;
 import ecsd;
 import ecsd.userdata;
-import dplug.math.vector;
+import std.algorithm;
+import std.random;
+import std.stdio;
 
 LevelMap lm;
 Universe uni;

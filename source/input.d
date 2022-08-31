@@ -2,9 +2,9 @@ module input;
 
 import ecsd;
 import events;
+import game;
 import levelmap;
 import playermodule;
-import game;
 import rendermodule;
 
 import bindbc.sdl;

@@ -1,28 +1,29 @@
 module levelmap;
 
-import events;
-import app;
 import ecsd;
 import ecsd.events;
 import ecsd.userdata;
-import rendermodule;
-import entitycreation;
-import perf;
+
+import app;
 import components;
 import components.complex;
-import playermodule;
-import set;
+import entitycreation;
+import events;
 import game;
-import randommodule;
 import levelgen;
+import perf;
+import playermodule;
+import randommodule;
+import rendermodule;
+import set;
 
-import vibe.data.serialization;
-import dplug.math.vector;
-import std.stdio;
 import bindbc.sdl;
 import bindbc.sdl.image;
-import std.random;
+import dplug.math.vector;
 import std.algorithm.searching;
+import std.random;
+import std.stdio;
+import vibe.data.serialization;
 
 LevelMap levelinit(int levelNum, Universe verse, int x, int y){ 
     writeln("Initializing levelMap ", levelNum);

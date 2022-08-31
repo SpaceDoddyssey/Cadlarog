@@ -4,6 +4,7 @@ import ecsd;
 import ecsd.events;
 import ecsd.storage;
 import ecsd.userdata;
+
 import dplug.math.vector;
 import vibe.data.bson;
 

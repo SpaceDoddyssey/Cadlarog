@@ -2,18 +2,18 @@ module components.ai;
 
 import components;
 import components.equipslots;
+import events;
 import levelmap;
 import playermodule;
-import events;
 import randommodule;
 
-import std.stdio;
+import dplug.math.vector;
 import ecsd;
 import ecsd.events;
 import ecsd.userdata;
-import vibe.data.serialization;
 import std.random;
-import dplug.math.vector;
+import std.stdio;
+import vibe.data.serialization;
 
 struct AISlimePurple{
     Dir curDir;

@@ -3,12 +3,13 @@ module guimodule;
 import bindbc.sdl;
 import bindbc.sdl.image;
 import bindbc.sdl.ttf;
-import std.stdio;
 import std.algorithm;
-import std.range;
 import std.conv;
-import rendermodule;
+import std.range;
+import std.stdio;
 import std.string;
+
+import rendermodule;
 import ringbuffer;
 
 TTF_Font* curFont;
