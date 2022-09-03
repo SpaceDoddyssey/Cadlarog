@@ -13,6 +13,7 @@ struct PlayerMove{ Dir dir; this(Dir d){ dir = d; } }
 struct PickUp{}
 
 struct WalkedOnto{}
+struct Trigger{}
 
 struct NpcMove{
   Entity e;

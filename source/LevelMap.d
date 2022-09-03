@@ -25,6 +25,8 @@ import std.random;
 import std.stdio;
 import vibe.data.serialization;
 
+import components.traps;
+
 LevelMap levelinit(int levelNum, Universe verse, int x, int y){ 
     writeln("Initializing levelMap ", levelNum);
     lm = new LevelMap(levelNum, verse, x, y);
@@ -117,9 +119,10 @@ class LevelMap{
         getTile(source).remove(e);
         getTile(dest).add(e);
     }
-    void placeEntInRoom(string s1, string s2, Room r){
+    Entity placeEntInRoom(string s1, string s2, Room r){
         Entity ent = makeEntity(verse, s1, s2);
         placeEntInRoom(ent, r);
+        return ent;
     }
     void placeEntInRoom(Entity ent, Room r){
         int attempts = 0;
@@ -136,6 +139,45 @@ class LevelMap{
             }
         }
         writeln("Entity failed to place!");
+    }
+    void placeArrowTrap(Entity prPlate, Entity trap, vec2i loc){
+        import std.algorithm: canFind;
+        //Place the plate
+        publish(PlaceEntity(prPlate, loc));
+        (prPlate.get!PressurePlate()).trapToTrigger = trap;
+        //crawl in random direction, if you hit a door try a different direction
+        int[] alreadyChecked;
+        vec2i walkDelta;
+        while(alreadyChecked.length < 4){
+            int dir = uniform(0, 4, levelGenRand);
+            if(canFind(alreadyChecked, dir)){
+                continue;
+            }
+            alreadyChecked ~= dir;
+            if(dir <= 1){ //up-down
+                walkDelta.x = 0;
+                //if up else down
+                if(dir == 0){ walkDelta.y = 1; } else { walkDelta.y = -1; }
+            } else { //left-right
+                walkDelta.y = 0;
+                //if left else right
+                if(dir == 3){ walkDelta.x = -1; } else { walkDelta.x = 1; }
+            }
+            bool wall = false;
+            vec2i checkPos = loc;
+            while(true){
+                checkPos += walkDelta;
+                Tile t = getTile(checkPos);
+                if(t.type == TileType.RoomBorder){
+                    publish(PlaceEntity(trap, checkPos));
+                    return;
+                } else if ((t.entsWith!Door()).length > 0){
+                    break;
+                }
+            }
+        }
+        //if you hit a wall place the trap there
+        //tell it to face the direction you crawled from
     }
 }
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -231,6 +273,26 @@ public struct Rect
         int resultX = cast(int)uniform(mins.x+1, maxs.x, levelGenRand);
         int resultY = cast(int)uniform(mins.y+1, maxs.y, levelGenRand);
         return vec2i(resultX, resultY);
+    }
+    public vec2i randPointOnBorder(){ //Excludes corners
+        int dir = uniform(0, 4, levelGenRand);
+        int xPos, yPos;
+        if(dir <= 1){ //up-down
+            xPos = uniform(mins.x+1, maxs.x, levelGenRand);
+            if(dir == 0){
+                yPos = maxs.y;
+            } else {
+                yPos = mins.y;
+            }
+        } else { //left-right
+            yPos = uniform(mins.y+1, maxs.y, levelGenRand);
+            if(dir == 2){
+                xPos = maxs.x;
+            } else {
+                xPos = mins.x;
+            }
+        }
+        return vec2i(xPos, yPos);
     }
 }
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX

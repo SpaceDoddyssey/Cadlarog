@@ -9,6 +9,7 @@ import ecsd;
 
 import components;
 import components.complex;
+import components.traps;
 import entitycreation;
 import events;
 import game;
@@ -16,6 +17,41 @@ import levelmap;
 import playermodule;
 import randommodule;
 import rendermodule;
+
+static void populate(){
+    writeln("Populating entities");
+    //Populate 'primary' room
+    Room spawnRoom = lm.getRandomRoom();
+    lm.placeEntInRoom("crate", "sword", spawnRoom);
+    lm.placeEntInRoom("crate", "shield", spawnRoom);
+    lm.placeEntInRoom("slime_purple", null, spawnRoom);
+    lm.placeEntInRoom("slime_green", null, spawnRoom);
+
+    Entity pp = makeEntity(uni, "press_plate", null);
+    Entity at = makeEntity(uni, "arrow_trap", null);
+    lm.placeArrowTrap(pp, at, spawnRoom.randPointIn());
+
+    lm.placeEntInRoom("crate", "sword", lm.getRandomRoom());
+    //Place down stairs
+    Room r = lm.getRandomRoom();
+    vec2i stairsLoc = r.randPointIn();
+    Entity downStairs = makeEntity(uni, "stairs_down", null);
+    publish(PlaceEntity(downStairs, stairsLoc));
+    lm.stairsDownLoc = stairsLoc;
+    //Place up stairs
+    if(lm.levelNum != 0){
+        r = lm.getRandomRoom();
+        stairsLoc = r.randPointIn();
+        Entity upStairs = makeEntity(uni, "stairs_up", null);
+        publish(PlaceEntity(upStairs, stairsLoc));
+        lm.stairsUpLoc = stairsLoc;
+    } else {
+        lm.placeEntInRoom(player, spawnRoom);
+        MapPos* mp = player.get!MapPos();
+        cameraXOffset = mp.x - 15;
+        cameraYOffset = mp.y - 15;
+    }
+}
 
 static void initialize(LevelMap lev){
     writeln("Populating ", lev.maxWidth, " * ", lev.maxHeight, " tiles");
@@ -155,11 +191,12 @@ bool plumbLineToPath(LevelMap lev, Room room){
         }
     }
 
+    //Walk in the chosen direction
     int nextX = xPos;
     int nextY = yPos;
     int attempts = 0;
     while(true){
-        if(attempts++ >= 100){
+        if(attempts++ >= 50){
             writeln("Aborted! ", __FILE__, " line ", __LINE__);
             return false;
         }
@@ -220,37 +257,6 @@ static void cullDeadEnds(LevelMap lev){
                 x--;
             }
         }
-    }
-}
-
-static void populate(){
-    writeln("Populating entities");
-    //Populate 'primary' room
-    Room spawnRoom = lm.getRandomRoom();
-    lm.placeEntInRoom("crate", "sword", spawnRoom);
-    lm.placeEntInRoom("crate", "shield", spawnRoom);
-    lm.placeEntInRoom("slime_purple", null, spawnRoom);
-    lm.placeEntInRoom("slime_green", null, spawnRoom);
-
-    lm.placeEntInRoom("crate", "sword", lm.getRandomRoom());
-    //Place down stairs
-    Room r = lm.getRandomRoom();
-    vec2i stairsLoc = r.randPointIn();
-    Entity downStairs = makeEntity(uni, "stairs_down", null);
-    publish(PlaceEntity(downStairs, stairsLoc));
-    lm.stairsDownLoc = stairsLoc;
-    //Place up stairs
-    if(lm.levelNum != 0){
-        r = lm.getRandomRoom();
-        stairsLoc = r.randPointIn();
-        Entity upStairs = makeEntity(uni, "stairs_up", null);
-        publish(PlaceEntity(upStairs, stairsLoc));
-        lm.stairsUpLoc = stairsLoc;
-    } else {
-        lm.placeEntInRoom(player, spawnRoom);
-        MapPos* mp = player.get!MapPos();
-        cameraXOffset = mp.x - 15;
-        cameraYOffset = mp.y - 15;
     }
 }
 

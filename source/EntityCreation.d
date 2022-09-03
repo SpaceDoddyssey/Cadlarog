@@ -97,11 +97,16 @@ static Entity makeEntity(Universe verse, string s, string s2){
             break;
         }
         case("press_plate"):{
+            ent.add(SpriteRender("sprites/press_plate.png", vec2i(32, 32), SpriteLayer.Door));
             ent.add(PressurePlate());
             break;
         }
+        case("arrow_trap"):{
+            ent.add(SpriteRender("sprites/crossbow.png", vec2i(32, 32), SpriteLayer.Door));
+            ent.add(ArrowTrap());
+            break;
+        }
         case(""):{
-
         }
         default:
             writeln("Invalid entity string \"" ~ s ~"\"");
