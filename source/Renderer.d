@@ -114,7 +114,8 @@ void rendererInit(ref AppStartup s){
 
     if(IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG)
         fatalf("failed to initialize SDL_Image: %s", SDL_GetError().fromStringz);
-
+    
+    //Create window
     window = SDL_CreateWindow(
         "Cadlarog",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -122,7 +123,10 @@ void rendererInit(ref AppStartup s){
         SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_FOCUS
     );
     if(window is null) fatalf("failed to open window: %s", SDL_GetError().fromStringz);
-    
+    SDL_Surface* icon = IMG_Load("icon.png");
+    SDL_SetWindowIcon(window, icon);
+    SDL_FreeSurface(icon);
+
     renderer = SDL_CreateRenderer(
         window,
         -1,
