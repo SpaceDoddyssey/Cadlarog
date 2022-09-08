@@ -170,14 +170,13 @@ class LevelMap{
                 Tile t = getTile(checkPos);
                 if(t.type == TileType.RoomBorder){
                     publish(PlaceEntity(trap, checkPos));
+                    (trap.get!ArrowTrap()).direction = walkDelta * -1;
                     return;
                 } else if ((t.entsWith!Door()).length > 0){
                     break;
                 }
             }
         }
-        //if you hit a wall place the trap there
-        //tell it to face the direction you crawled from
     }
 }
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX

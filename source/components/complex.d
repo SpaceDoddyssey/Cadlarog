@@ -16,6 +16,15 @@ import guimodule;
 import playermodule;
 import components;
 
+struct TravellingProjectile{
+    Entity ent;
+    int piercing;
+    int damage;
+    void onComponentAdded(Universe verse, EntityID id){
+        ent = Entity(id);
+    }
+}
+
 struct HP{
     int curHP, maxHP, damRed = 0;
     Entity ent;
@@ -128,6 +137,7 @@ struct Contents{
 
 void registerComplexComponents(Universe verse)
 {
+    verse.registerComponent!TravellingProjectile;
     verse.registerComponent!SpriteRender;
     verse.registerComponent!HP;
     verse.registerComponent!Door;

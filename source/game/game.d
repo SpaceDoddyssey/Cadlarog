@@ -165,3 +165,27 @@ void playerMove(ref PlayerMove m){
   }
   publish(TurnTick());
 }
+
+void rangedAttack(Entity projEnt, vec2i start, vec2i delta){
+  TravellingProjectile* tProj = projEnt.get!TravellingProjectile;
+  vec2i curPos = start;
+
+  while(true){
+    curPos += delta;
+    Tile t = lm.getTile(curPos);
+
+    if(t.type == TileType.Wall || t.type == TileType.RoomBorder){
+      addLogMessage("Arrow hit a wall");
+      break;
+    }
+
+    if((t.entsWith!TileBlock).length == 0){
+      continue;
+    } else if(curPos == player.get!MapPos.position){
+      addLogMessage("ARROW'D!!!!");
+      break;
+    } else {
+      break;
+    }
+  }
+}

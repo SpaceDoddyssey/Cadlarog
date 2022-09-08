@@ -1,8 +1,12 @@
 module components.traps;
 
+import components;
+import dplug.math.vector;
 import ecsd;
 import ecsd.events;
+import entitycreation;
 import events;
+import game;
 import guimodule;
 import vibe.data.bson;
 
@@ -25,6 +29,7 @@ struct PressurePlate{
 
 struct ArrowTrap{
     Entity ent;
+    vec2i direction;
     void onComponentDeserialized(Universe uni,EntityID owner,Bson bson){
         ent.subscribe(&trigger);
     }
@@ -35,7 +40,7 @@ struct ArrowTrap{
         }
     }
     void trigger(Entity e, ref Trigger t){
-        addLogMessage("ARROW'D!!!!");
+        rangedAttack(makeEntity(uni, "arrow", null), ent.get!MapPos.position, direction);
     }
 }
 
