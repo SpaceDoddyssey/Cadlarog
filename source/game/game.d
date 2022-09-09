@@ -179,10 +179,15 @@ void rangedAttack(Entity projEnt, vec2i start, vec2i delta){
       break;
     }
 
-    if((t.entsWith!TileBlock).length == 0){
+    auto blockingEnts = t.entsWith!TileBlock;
+    if(blockingEnts.length == 0){
       continue;
     } else if(curPos == player.get!MapPos.position){
-      addLogMessage("ARROW'D!!!!");
+      if(projEnt.has!Attack){
+        Attack* a = projEnt.get!Attack;
+        player.get!PubSub.publish(AttackEvent(projEnt, player, *a));
+      }
+
       break;
     } else {
       break;

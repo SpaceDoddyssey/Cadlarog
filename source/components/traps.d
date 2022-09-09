@@ -23,6 +23,7 @@ struct PressurePlate{
         }
     }
     void trigger(Entity e, ref WalkedOnto w){
+        addLogMessage("You hear a click. You've stepped on a pressure plate!");
         trapToTrigger.publish(Trigger());
     }
 }
