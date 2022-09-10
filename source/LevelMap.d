@@ -204,13 +204,17 @@ public struct Tile{
         }
         foreach(Entity inv ; invalids){
             ents.remove(inv);
-            //Worried about this not happening if I access things through other methods
         }
         return result;
     }
     void publish(T)(T event) {//if(__traits(compiles, { ent.publish!T; })) {
+        Entity[] invalids;
         foreach(Entity ent; entsWith!PubSub()){
+            if(!ent.valid){ invalids ~= ent; continue; }
             ent.publish(event);
+            foreach(Entity inv ; invalids){
+                ents.remove(inv);
+            }
         }
     }
     void add(Entity ent){ ents.add(ent); }
