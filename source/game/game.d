@@ -170,7 +170,7 @@ void rangedAttack(Entity projEnt, vec2i start, vec2i delta){
   TravellingProjectile* tProj = projEnt.get!TravellingProjectile;
   vec2i curPos = start;
 
-  while(true){
+  while(tProj.piercing >= 0){
     curPos += delta;
     Tile t = lm.getTile(curPos);
 
@@ -182,15 +182,13 @@ void rangedAttack(Entity projEnt, vec2i start, vec2i delta){
     auto blockingEnts = t.entsWith!TileBlock;
     if(blockingEnts.length == 0){
       continue;
-    } else if(curPos == player.get!MapPos.position){
+    } else {
+      Entity target = blockingEnts[0];
       if(projEnt.has!Attack){
         Attack* a = projEnt.get!Attack;
-        player.get!PubSub.publish(AttackEvent(projEnt, player, *a));
+        target.get!PubSub.publish(AttackEvent(projEnt, target, *a));
       }
-
-      break;
-    } else {
-      break;
+      tProj.piercing--;
     }
   }
 }
