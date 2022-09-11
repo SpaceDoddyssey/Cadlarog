@@ -128,15 +128,13 @@ void pickUp(ref PickUp p){
   Entity[] ents = curTile.entsWith!CanPickUp;
   if(ents.length > 0){
     //Obviously change this when there's more than just swords to pick up
-    if(ents[0].has!Weapon){
+    if(ents[0].has!Weapon || ents[0].has!RangedWeapon){
       PrimaryWeaponSlot* pWSlot = player.get!PrimaryWeaponSlot;
       pWSlot.equip(ents[0]);
     } else if (ents[0].has!Shield){
       ShieldSlot* sSlot = player.get!ShieldSlot;
       sSlot.equip(ents[0]);
-    } else {
-      return;
-    }
+    } 
     (ents[0]).remove!MapPos;
     (ents[0].get!SpriteRender()).enabled = false;
     curTile.remove(ents[0]);

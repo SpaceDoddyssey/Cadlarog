@@ -22,10 +22,11 @@ static void populate(){
     writeln("Populating entities");
     //Populate 'primary' room
     Room spawnRoom = lm.getRandomRoom();
-    lm.placeEntInRoom("crate", "sword", spawnRoom);
-    lm.placeEntInRoom("crate", "shield", spawnRoom);
+    //lm.placeEntInRoom("crate", "sword", spawnRoom);
+    //lm.placeEntInRoom("crate", "shield", spawnRoom);
     lm.placeEntInRoom("slime_purple", null, spawnRoom);
-    lm.placeEntInRoom("slime_green", null, spawnRoom);
+    //lm.placeEntInRoom("slime_green", null, spawnRoom);
+    lm.placeEntInRoom("crossbow", null, spawnRoom);
 
     Entity pp = makeEntity(uni, "press_plate", null);
     Entity at = makeEntity(uni, "arrow_trap", null);

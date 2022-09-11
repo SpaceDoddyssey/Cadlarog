@@ -42,6 +42,11 @@ struct Weapon{
     Attack attack;
 }
 
+struct RangedWeapon{
+    Attack attack; //melee attack
+    Attack rangedAttack;
+}
+
 struct Attack{
     int damage;
 }
@@ -59,5 +64,6 @@ void registerSimpleComponents(Universe verse)
     verse.registerComponent!Stairs;
     verse.registerComponent!Shield;
     verse.registerComponent!Weapon;
+    verse.registerComponent!RangedWeapon;
     verse.registerComponent!Attack;
 }

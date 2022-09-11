@@ -64,6 +64,12 @@ static Entity makeEntity(Universe verse, string s, string s2){
             ent.add(Name(s));
             break;
         }
+        case("crossbow"):{
+            ent.add(SpriteRender("sprites/crossbow.png", vec2i(32, 32), SpriteLayer.Item));
+            ent.add(Name(s));
+            ent.add(CanPickUp());
+            break;
+        }
         case("slime_purple"):{
             ent.add(SpriteRender("sprites/slime_purple.png", vec2i(32, 32), SpriteLayer.Character));
             ent.add(HP(6));
