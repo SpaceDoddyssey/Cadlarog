@@ -25,12 +25,11 @@ struct AISlimePurple{
     void onComponentAdded(Universe verse, EntityID id){
         ent = Entity(id);
         lm = ent.universe.getUserdata!LevelMap;
-        if(!verse.serializing) mp = ent.get!MapPos;
         curDir = cast(Dir)uniform(2, 4, aiRand);
         subscribe(&onTick);
     }
     import vibe.data.bson;
-    void onComponentDeserialized(Universe, EntityID, Bson){
+    void onEntitySpawned(Universe verse, EntityID id){
         mp = ent.get!MapPos;
     }
     void onComponentRemoved(Universe verse, EntityID id){
@@ -79,11 +78,10 @@ struct AISlimeGreen{
     void onComponentAdded(Universe verse, EntityID id){
         ent = Entity(id);
         lm = ent.universe.getUserdata!LevelMap;
-        if(!verse.serializing) mp = ent.get!MapPos;
         subscribe(&onTick);
     }
     import vibe.data.bson;
-    void onComponentDeserialized(Universe, EntityID, Bson){
+    void onEntitySpawned(Universe, EntityID){
         mp = ent.get!MapPos;
     }
     void onComponentRemoved(Universe verse, EntityID id){

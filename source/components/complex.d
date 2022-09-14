@@ -31,14 +31,11 @@ struct HP{
     this(int h){
         curHP = maxHP = h;
     }
-    void onComponentDeserialized(Universe uni,EntityID owner,Bson bson){
+    void onEntitySpawned(Universe uni,EntityID owner){
         ent.subscribe(&receiveAttack);
     }
     void onComponentAdded(Universe verse, EntityID id){
         ent = Entity(id);
-        if(!verse.serializing){
-            ent.subscribe(&receiveAttack);
-        }
     }
     void takeDamage(int d){
         if (d > damRed) { curHP -= (d - damRed); } 
@@ -73,16 +70,12 @@ struct Door{
     bool isOpen;
     string openSprite, closedSprite;
     Entity ent;
-    void onComponentDeserialized(Universe uni,EntityID owner,Bson bson){
+    void onEntitySpawned(Universe uni, EntityID owner){
         ent.subscribe(&doorOpen);
         ent.subscribe(&doorClose);
     }
     void onComponentAdded(Universe verse, EntityID id){
         ent = Entity(id);
-        if(!verse.serializing){
-            ent.subscribe(&doorOpen);
-            ent.subscribe(&doorClose);
-        }
     }
     void doorOpen(Entity e, ref OpenEvent o){
         if(!isOpen) { 
@@ -103,14 +96,11 @@ struct Door{
 struct Contents{
     Entity[] contents;
     Entity ent; //the entity for the crate itself
-    void onComponentDeserialized(Universe uni,EntityID owner,Bson bson){
+    void onEntitySpawned(Universe uni,EntityID owner){
         ent.subscribe(&die);
     }
     void onComponentAdded(Universe verse, EntityID id){
         ent = Entity(id);
-        if(!verse.serializing){
-            ent.subscribe(&die);
-        }
     }
     void addContents(Entity e){
         if(e.has!SpriteRender){

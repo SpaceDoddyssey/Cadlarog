@@ -125,6 +125,7 @@ static Entity makeEntity(Universe verse, string s, string s2){
             ent.free();
             return ent.init;
     }
+    ent.spawn();
     return ent;
 }
 
@@ -140,6 +141,7 @@ static Entity spawnNewPlayer(Universe verse){
     ent.add(ShieldSlot());
     ent.add(DR());
     player = ent;
+    player.spawn();
     return ent;
 }
 

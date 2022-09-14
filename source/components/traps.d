@@ -13,14 +13,11 @@ import vibe.data.bson;
 struct PressurePlate{
     Entity trapToTrigger;
     Entity ent;
-    void onComponentDeserialized(Universe uni,EntityID owner,Bson bson){
+    void onEntitySpawned(Universe uni,EntityID owner){
         ent.subscribe(&trigger);
     }
     void onComponentAdded(Universe verse, EntityID id){
         ent = Entity(id);
-        if(!verse.serializing){
-            ent.subscribe(&trigger);
-        }
     }
     void trigger(Entity e, ref WalkedOnto w){
         addLogMessage("You hear a click. You've stepped on a pressure plate!");
@@ -31,14 +28,11 @@ struct PressurePlate{
 struct ArrowTrap{
     Entity ent;
     vec2i direction;
-    void onComponentDeserialized(Universe uni,EntityID owner,Bson bson){
+    void onEntitySpawned(Universe uni,EntityID owner){
         ent.subscribe(&trigger);
     }
     void onComponentAdded(Universe verse, EntityID id){
         ent = Entity(id);
-        if(!verse.serializing){
-            ent.subscribe(&trigger);
-        }
     }
     void trigger(Entity e, ref Trigger t){
         rangedAttack(makeEntity(uni, "arrow", null), ent.get!MapPos.position, direction);

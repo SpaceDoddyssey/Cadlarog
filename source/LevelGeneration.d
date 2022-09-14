@@ -25,7 +25,7 @@ static void populate(){
     //lm.placeEntInRoom("crate", "sword", spawnRoom);
     //lm.placeEntInRoom("crate", "shield", spawnRoom);
     lm.placeEntInRoom("slime_purple", null, spawnRoom);
-    //lm.placeEntInRoom("slime_green", null, spawnRoom);
+    lm.placeEntInRoom("slime_green", null, spawnRoom);
     lm.placeEntInRoom("crossbow", null, spawnRoom);
 
     Entity pp = makeEntity(uni, "press_plate", null);
