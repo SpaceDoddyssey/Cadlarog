@@ -15,7 +15,7 @@ struct PrimaryWeaponSlot{
         defaultAttack = d;
     }
     void equip(Entity w){
-        if(w.has!Weapon){
+        if(w.has!Weapon || w.has!RangedWeapon){
             equipped = w;
         } else { writeln("Can't equip that there!"); }
     }

@@ -76,14 +76,30 @@ void controlHandling(ref LoopStruct l){
 	//Disabled if player is dead
 	if(player.valid){
 		//Player movement
-		if(isKeyPressed(SDLK_s, true))
-			publish(PlayerMove(Dir.Down)); 
-		if(isKeyPressed(SDLK_w, true))
-			publish(PlayerMove(Dir.Up)); 
-		if(isKeyPressed(SDLK_a, true))
-			publish(PlayerMove(Dir.Left)); 
-		if(isKeyPressed(SDLK_d, true))
-			publish(PlayerMove(Dir.Right));
+		if(isKeyPressed(SDLK_s, true)){
+			if(takingDirInput)
+				publish(DirInput(Dir.Down)); 
+			else 
+				publish(PlayerMove(Dir.Down));
+		} 
+		if(isKeyPressed(SDLK_w, true)){
+			if(takingDirInput)
+				publish(DirInput(Dir.Up)); 
+			else 
+				publish(PlayerMove(Dir.Up));
+		}  
+		if(isKeyPressed(SDLK_a, true)){
+			if(takingDirInput)
+				publish(DirInput(Dir.Left)); 
+			else 
+				publish(PlayerMove(Dir.Left)); 
+		}
+		if(isKeyPressed(SDLK_d, true)){
+			if(takingDirInput)
+				publish(DirInput(Dir.Right)); 
+			else 
+				publish(PlayerMove(Dir.Right));
+		} 
 
 		if(isKeyPressed(SDLK_SPACE, true))
 			publish(PlayerMove(Dir.None));
@@ -91,7 +107,10 @@ void controlHandling(ref LoopStruct l){
 		//Player actions
 		if(isKeyPressed(SDLK_p, true))
 			publish(PickUp());
-		//if(isKeyPressed(SDLK_k, true))
+		if(isKeyPressed(SDLK_k, true))
+			if(rangedWeaponEquipped()){
+				takingDirInput = !takingDirInput;
+			}
 		if(isKeyPressed(SDLK_l, true))
 			changeLevel(gameData.curLevel + 1);	
 		if(isKeyPressed(SDLK_o, true))

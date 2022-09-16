@@ -44,7 +44,7 @@ struct Weapon{
 
 struct RangedWeapon{
     Attack attack; //melee attack
-    Attack rangedAttack;
+    Entity projectile;
 }
 
 struct Attack{

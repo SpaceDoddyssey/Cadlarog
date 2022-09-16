@@ -41,6 +41,13 @@ struct AttackEvent{
   alias a this;
 }
 
+struct DirInput{
+  Dir dir;
+  this(Dir d){
+    dir = d;
+  }
+}
+
 enum Dir{
   None,
   Left,
@@ -48,6 +55,7 @@ enum Dir{
   Up,
   Down
 }
+
 struct SDLEvent{
     SDL_Event* event;
     alias event this;

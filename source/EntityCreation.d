@@ -64,12 +64,6 @@ static Entity makeEntity(Universe verse, string s, string s2){
             ent.add(Name(s));
             break;
         }
-        case("crossbow"):{
-            ent.add(SpriteRender("sprites/crossbow.png", vec2i(32, 32), SpriteLayer.Item));
-            ent.add(Name(s));
-            ent.add(CanPickUp());
-            break;
-        }
         case("slime_purple"):{
             ent.add(SpriteRender("sprites/slime_purple.png", vec2i(32, 32), SpriteLayer.Character));
             ent.add(HP(6));
@@ -110,6 +104,13 @@ static Entity makeEntity(Universe verse, string s, string s2){
         case("arrow_trap"):{
             ent.add(SpriteRender("sprites/crossbow.png", vec2i(32, 32), SpriteLayer.Door));
             ent.add(ArrowTrap());
+            break;
+        }
+        case("crossbow"):{
+            ent.add(SpriteRender("sprites/crossbow.png", vec2i(32, 32), SpriteLayer.Item));
+            ent.add(Name(s));
+            ent.add(CanPickUp());
+            ent.add(RangedWeapon(Attack(1), makeEntity(verse, "arrow", null)));
             break;
         }
         case("arrow"):{

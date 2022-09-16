@@ -44,6 +44,7 @@ scope(exit) Perf
 
 void subscribeFunctions(){
     writeln("Subscribing functions");
+    subscribe(&takeDirInput);
     subscribe(&onEntityAlloc);
     subscribe(&placeEntity);
     subscribe(&gameInit);

@@ -23,8 +23,30 @@ import std.stdio;
 
 LevelMap lm;
 Universe uni;
+bool takingDirInput = false;
 
 GameInfo gameData = void;
+
+bool rangedWeaponEquipped(){
+  if(!player.has!PrimaryWeaponSlot){
+    return false;
+  }
+  PrimaryWeaponSlot* pws = player.get!PrimaryWeaponSlot;
+  if(pws.equipped.isNull){
+    return false;
+  }
+  if(!pws.equipped.get.get!RangedWeapon){
+    return false;
+  }
+
+  return(true);
+}
+
+void takeDirInput(ref DirInput input){
+  addLogMessage("You fire your weapon");
+  takingDirInput = false;
+  publish(TurnTick());
+}
 
 struct GameInfo{
   int curLevel;
