@@ -41,6 +41,14 @@ struct AttackEvent{
   alias a this;
 }
 
+vec2i convertDir(Dir direc){
+  if(direc == Dir.Up){ return vec2i(0, -1); }
+  if(direc == Dir.Down){ return vec2i(0, 1); }
+  if(direc == Dir.Left){ return vec2i(-1, 0); }
+  if(direc == Dir.Right){ return vec2i(1, 0); }
+  else { return vec2i(0, 0); }
+}
+
 struct DirInput{
   Dir dir;
   this(Dir d){

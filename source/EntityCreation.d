@@ -114,7 +114,7 @@ static Entity makeEntity(Universe verse, string s, string s2){
             break;
         }
         case("arrow"):{
-            ent.add(TravellingProjectile());
+            ent.add(TravellingProjectile(0, 5));
             ent.add(Name("arrow"));
             ent.add(Attack(5));
             break;

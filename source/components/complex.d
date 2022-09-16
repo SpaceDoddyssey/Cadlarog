@@ -23,6 +23,10 @@ struct TravellingProjectile{
     void onComponentAdded(Universe verse, EntityID id){
         ent = Entity(id);
     }
+    this(int p, int d){
+        piercing = p;
+        damage = d;
+    }
 }
 
 struct HP{

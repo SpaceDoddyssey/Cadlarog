@@ -43,8 +43,17 @@ bool rangedWeaponEquipped(){
 }
 
 void takeDirInput(ref DirInput input){
-  addLogMessage("You fire your weapon");
-  takingDirInput = false;
+  vec2i delta = convertDir(input.dir);
+  if(delta.x != 0 || delta.y != 0){
+
+    RangedWeapon* rw = (player.get!PrimaryWeaponSlot).equipped.get.get!RangedWeapon;
+    Entity newProjectile = uni.allocEntity();
+    uni.copyEntity(rw.projectile, newProjectile);
+
+    rangedAttack(newProjectile, player.get!MapPos().position, convertDir(input.dir));
+    takingDirInput = false;
+  }
+  
   publish(TurnTick());
 }
 
