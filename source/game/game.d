@@ -45,7 +45,8 @@ bool rangedWeaponEquipped(){
 void takeDirInput(ref DirInput input){
   vec2i delta = convertDir(input.dir);
   if(delta.x != 0 || delta.y != 0){
-
+    //NOTE: This assumes you have a weapon equipped,
+    //bc right now that's the only way you'll reach this function
     RangedWeapon* rw = (player.get!PrimaryWeaponSlot).equipped.get.get!RangedWeapon;
     Entity newProjectile = uni.allocEntity();
     uni.copyEntity(rw.projectile, newProjectile);

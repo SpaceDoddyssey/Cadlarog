@@ -48,7 +48,7 @@ struct HP{
             if(*name == "Hero"){
                 addLogMessage("The Hero has fallen. All hope is lost!");
             } else {
-                addLogMessage("The " ~ *name ~ " is destroyed");
+                addLogMessage("The " ~ *name ~ " is destroyed!");
             }
             ent.publish(DeathEvent());
             ent.free();
@@ -63,6 +63,10 @@ struct HP{
             addLogMessage(s);
         } else if (atEv.victim == player){
             string s = "The " ~ *(atEv.source.get!Name) ~ " deals " ~ to!string(damageDone) ~ " damage to you!";
+            addLogMessage(s);
+        } else {
+            string s = "The " ~ *(atEv.source.get!Name) ~ " deals " ~ to!string(damageDone) 
+            ~ " damage to the " ~ *(atEv.victim.get!Name);
             addLogMessage(s);
         }
         int d = atEv.damage;
