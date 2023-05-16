@@ -94,7 +94,7 @@ class LevelMap{
             texturePhase(this);
         }
     ref Tile getTile(int x, int y) { return tiles[y * maxWidth + x]; }
-    ref Tile getTile(vec2i pos) { return getTile(pos.v.tupleof); }
+    ref Tile getTile(vec2i pos) { return getTile(pos.opIndex(0), pos.opIndex(1)); }
     ref Room getRandomRoom(){
         int whichRoom = cast(int)uniform(0, rooms.length, levelGenRand);
         return rooms[whichRoom];
