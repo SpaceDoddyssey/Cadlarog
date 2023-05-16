@@ -26,8 +26,8 @@ alias ShouldExit = Flag!"ShouldExit";
 
 void main()
 {
-    debug sharedLog.logLevel = LogLevel.all;
-    else sharedLog.logLevel = LogLevel.info;
+    debug { (cast()sharedLog).logLevel = LogLevel.all; }
+    else { (cast()sharedLog).logLevel = LogLevel.info; }
 
     subscribeFunctions();
 
